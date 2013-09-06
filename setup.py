@@ -1,7 +1,7 @@
 """
 Setup for SQLAlchemy backend for MonetDB
 """
-from rb.setuptools import find_packages, setup
+from setuptools import find_packages, setup
 
 setup_params = dict(
     name="sqlalchemy_monetdb",
