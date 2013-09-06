@@ -10,7 +10,7 @@ setup_params = dict(
     include_package_data=True,
     zip_safe=False,
     entry_points={
-        "sqlalchemy.dialects" : ["monetdb = sqlalchemy_monetdb:dialect"]
+        "sqlalchemy.dialects": ["monetdb = sqlalchemy_monetdb:dialect"]
     },
     license="MIT",
 )

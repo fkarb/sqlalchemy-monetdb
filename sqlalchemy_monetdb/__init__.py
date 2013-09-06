@@ -1,7 +1,7 @@
 # MonetDB SQLAlchemy Dialect
 #
 # Copyright (C) 2007 Matt Harrison matthewharrison AT gmail.com
-# Copyright (C) 2013 
+# Copyright (C) 2013
 #
 # This module maybe part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -27,7 +27,7 @@ Todo/issues:
 """
 
 import warnings
-from sqlalchemy import schema, exceptions, pool, util
+from sqlalchemy import schema, exc, pool, util
 from sqlalchemy import types as sqltypes
 from sqlalchemy.engine import default, reflection
 from sqlalchemy.sql import compiler
@@ -337,7 +337,7 @@ class MDBDialect(default.DefaultDialect):
         cursor = connection.execute(query, {"schema_name": schema_name})
         schema_id = cursor.scalar()
         if schema_id is None:
-            raise exceptions.InvalidRequestError(schema_name)
+            raise exc.InvalidRequestError(schema_name)
         return schema_id
 
     @reflection.cache
@@ -355,7 +355,7 @@ class MDBDialect(default.DefaultDialect):
 
         table_id = c.scalar()
         if table_id is None:
-            raise exceptions.NoSuchTableError(table_name)
+            raise exc.NoSuchTableError(table_name)
 
         return table_id
 
