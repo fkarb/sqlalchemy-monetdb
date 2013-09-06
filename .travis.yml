@@ -1,0 +1,26 @@
+language: python
+python:
+  - '2.6'
+  - '2.7'
+  - '3.2'
+before_install:
+- sudo sh -c "echo 'deb http://dev.monetdb.org/downloads/deb/ precise monetdb' > /etc/apt/sources.list.d/monetdb.list"
+ - wget --output-document=- http://dev.monetdb.org/downloads/MonetDB-GPG-KEY | sudo apt-key add -
+ - sudo apt-get update -qq
+ - sudo apt-get install -qq monetdb5-sql monetdb-client
+ - sudo usermod -a -G monetdb $USER
+ - sudo sh -c "echo 'STARTUP=yes\nDBFARM=/var/lib/monetdb\n' > /etc/default/monetdb5-sql"
+ - sudo service monetdb5-sql start
+ - sudo monetdbd set control=yes /var/lib/monetdb
+ - sudo monetdbd set passphrase=testdb /var/lib/monetdb
+ - sudo monetdb create demo
+ - sudo monetdb release demo
+install:
+  - pip install -r requirements.txt --use-mirrors
+  - ./setup.py install
+script:
+  - touch bananaproject/settings/local.py
+  - ./run_tests.py
+branches:
+  only:
+    - master
