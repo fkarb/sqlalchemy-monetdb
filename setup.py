@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 Setup for SQLAlchemy backend for MonetDB
 """

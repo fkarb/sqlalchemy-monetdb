@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from sqlalchemy.dialects import registry
 from sqlalchemy.testing import runner
 
