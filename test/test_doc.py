@@ -9,10 +9,10 @@ Start going through the docs for SQ with Monetdb backend...
   ...         return getattr(sys.stdout, name)
   >>> #logging.getLogger('sqlalchemy.engine').addHandler(WrapStdOut())
   >>> import sqlalchemy as sa
-  >>> engine = sa.create_engine("monetdb://host=localhost")
+  >>> engine = sa.create_engine("monetdb://localhost/demo")
 
 
-Define and create tables 
+Define and create tables
 -------------------------
 (note mdb comes with a "users" table)
 
@@ -25,7 +25,7 @@ Define and create tables
   ... )
 
 
-  >>> addresses = sa.Table('testaddresses', metadata, 
+  >>> addresses = sa.Table('testaddresses', metadata,
   ...   sa.Column('id', sa.Integer, primary_key=True),
   ...   sa.Column('user_id', None, sa.ForeignKey('testusers.id')),
   ...   sa.Column('email_address', sa.String(50), nullable=False)
@@ -46,7 +46,7 @@ Insert expressions
   >>> ins = users.insert(values={'name':'jack', 'fullname':'Jack Jones'})
   >>> str(ins)
   'INSERT INTO testusers (name, fullname) VALUES (:name, :fullname)'
-  >>> ins.compile().params 
+  >>> ins.compile().params
   ClauseParameters:{'fullname': 'Jack Jones', 'name': 'jack'}
 
 Executing
@@ -122,6 +122,10 @@ Drop tables
   >>> metadata.drop_all(engine)
 
 """
+
+
+from sqlalchemy.dialects import registry
+registry.register("monetdb", "sqlalchemy_monetdb.base", "MDBDialect")
 
 import doctest
 doctest.testmod()
