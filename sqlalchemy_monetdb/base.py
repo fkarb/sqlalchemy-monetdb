@@ -9,6 +9,10 @@ from sqlalchemy.types import INTEGER, BIGINT, SMALLINT, VARCHAR, \
         CHAR, TEXT, FLOAT, DATE, BOOLEAN, DECIMAL, TIMESTAMP, TIME, BLOB
 
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 class INET(sqltypes.TypeEngine):
     __visit_name__ = "INET"
 MDBInet = INET
@@ -72,6 +76,7 @@ class MDBCompiler(compiler.SQLCompiler):
             text += " OFFSET " + str(select._offset)
         return text
 
+    """
     def visit_column(self, column, result_map=None, **kwargs):
         # MonetDB does not currently support column references that include
         # a schema name. This could cause problems when selecting from two
@@ -107,6 +112,7 @@ class MDBCompiler(compiler.SQLCompiler):
 
             return self.preparer.quote(tablename, table.quote) + \
                 "." + name
+    """
 
     def visit_extended_join(self, join, asfrom=False, **kwargs):
         """Support for full outer join, created by rb.data.sqlalchemy.ExtendedJoin"""
@@ -144,8 +150,10 @@ class MDBDDLCompiler(compiler.DDLCompiler):
         return text
 
     def visit_drop_sequence(self, sequence):
-        if not self.checkfirst or self.dialect.has_sequence(self.connection, sequence.name):
-            self.append("DROP SEQUENCE %s" % self.preparer.format_sequence(sequence))
+        if not self.checkfirst or self.dialect.has_sequence(self.connection,
+                                                            sequence.name):
+            self.append("DROP SEQUENCE %s" %
+                        self.preparer.format_sequence(sequence))
             self.execute()
 
     def visit_check_constraint(self, constraint):
