@@ -1,4 +1,7 @@
-from sqlalchemy.testing.requirements import SuiteRequirements
+from sqlalchemy.testing.requirements import SuiteRequirements, exclusions
+
 
 class Requirements(SuiteRequirements):
-    pass
+    @property
+    def schemas(self):
+        return exclusions.open()
