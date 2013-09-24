@@ -28,7 +28,7 @@ setup_params = dict(
     test_suite="nose.collector",
     zip_safe=False,
     entry_points={
-        "sqlalchemy.dialects": ["monetdb = sqlalchemy_monetdb:dialect"]
+        "sqlalchemy.dialects": ["monetdb = sqlalchemy_monetdb.base:MDBDialect"]
     },
     license="MIT",
 )

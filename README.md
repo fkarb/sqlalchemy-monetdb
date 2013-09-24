@@ -26,13 +26,21 @@ this folder to your PYTHONPATH and register this dialect with SQLAlchemy::
 testing
 -------
 
-to test run::
+To run the test suite create a database test::
 
-   $ ./test_suite.py
+    $ monetdb create test && monetdb release test
+
+Create a test schema::
+
+    $ echo "create schema test_schema;" | mclient demo
+
+Run the test suite::
+
+    $ ./test_suite.py
 
 *note*: you need to have nose and mock installed::
 
-   $ pip install nose mock
+    $ pip install nose mock
 
 
 more info
