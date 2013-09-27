@@ -76,44 +76,6 @@ class MDBCompiler(compiler.SQLCompiler):
             text += " OFFSET " + str(select._offset)
         return text
 
-    """
-    def visit_column(self, column, result_map=None, **kwargs):
-        # MonetDB does not currently support column references that include
-        # a schema name. This could cause problems when selecting from two
-        # identically named tables; this would have to be manually remedied
-        # with table aliases.
-
-        name = orig_name = column.name
-        if name is None:
-            raise exc.CompileError("Cannot compile Column object until "
-                                   "it's 'name' is assigned.")
-
-        is_literal = column.is_literal
-        if not is_literal and isinstance(name, sql._truncated_label):
-            name = self._truncated_identifier("colident", name)
-
-        if result_map is not None:
-            result_map[name.lower()] = (orig_name,
-                                        (column, name, column.key),
-                                        column.type)
-
-        if is_literal:
-            name = self.escape_literal_column(name)
-        else:
-            name = self.preparer.quote(name, column.quote)
-
-        table = column.table
-        if table is None or not table.named_with_column:
-            return name
-        else:
-            tablename = table.name
-            if isinstance(tablename, sql._truncated_label):
-                tablename = self._truncated_identifier("alias", tablename)
-
-            return self.preparer.quote(tablename, table.quote) + \
-                "." + name
-    """
-
     def visit_extended_join(self, join, asfrom=False, **kwargs):
         """Support for full outer join, created by rb.data.sqlalchemy.ExtendedJoin"""
 
@@ -155,6 +117,33 @@ class MDBDDLCompiler(compiler.DDLCompiler):
             self.append("DROP SEQUENCE %s" %
                         self.preparer.format_sequence(sequence))
             self.execute()
+
+    def get_column_specification(self, column, **kwargs):
+        # Taken from PostgreSQL dialect
+        colspec = self.preparer.format_column(column)
+        impl_type = column.type.dialect_impl(self.dialect)
+        if column.primary_key and \
+            column is column.table._autoincrement_column and \
+            not isinstance(impl_type, sqltypes.SmallInteger) and \
+            (
+                column.default is None or
+                (
+                    isinstance(column.default, schema.Sequence) and
+                    column.default.optional
+                )):
+            if isinstance(impl_type, sqltypes.BigInteger):
+                colspec += " BIGSERIAL"
+            else:
+                colspec += " SERIAL"
+        else:
+            colspec += " " + self.dialect.type_compiler.process(column.type)
+            default = self.get_column_default_string(column)
+            if default is not None:
+                colspec += " DEFAULT " + default
+
+        if not column.nullable:
+            colspec += " NOT NULL"
+        return colspec
 
     def visit_check_constraint(self, constraint):
         util.warn("Skipped unsupported check constraint %s" % constraint.name)
