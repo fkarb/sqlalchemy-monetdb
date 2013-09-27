@@ -111,12 +111,9 @@ class MDBDDLCompiler(compiler.DDLCompiler):
             text += " INCREMENT BY %d" % create.element.increment
         return text
 
-    def visit_drop_sequence(self, sequence):
-        if not self.checkfirst or self.dialect.has_sequence(self.connection,
-                                                            sequence.name):
-            self.append("DROP SEQUENCE %s" %
-                        self.preparer.format_sequence(sequence))
-            self.execute()
+    def visit_drop_sequence(self, drop):
+        return "DROP SEQUENCE %s" % \
+                self.preparer.format_sequence(drop.element)
 
     def get_column_specification(self, column, **kwargs):
         # Taken from PostgreSQL dialect
