@@ -141,9 +141,22 @@ class MDBDDLCompiler(compiler.DDLCompiler):
             if default is not None:
                 colspec += " DEFAULT " + default
 
-        if not column.nullable:
-            colspec += " NOT NULL"
+            if not column.nullable:
+                colspec += " NOT NULL"
         return colspec
+
+    def visit_primary_key_constraint(self, constraint):
+        """ copied from postgres but removed PRIMARY KEY statement, since
+        SERIAL implies PRIMARY KEY.
+        """
+        if len(constraint) == 0:
+            return ''
+        text = ""
+        if constraint.name is not None:
+            text += "CONSTRAINT %s " % \
+                    self.preparer.format_constraint(constraint)
+        text += self.define_constraint_deferrability(constraint)
+
 
     def visit_check_constraint(self, constraint):
         util.warn("Skipped unsupported check constraint %s" % constraint.name)
