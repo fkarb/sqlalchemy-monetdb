@@ -37,6 +37,8 @@ create a database test::
 Create a test schema::
 
     $ echo "create schema test_schema;" | mclient test
+    $ echo "create schema test_schema2;" | mclient test
+    $ echo "alter user monetdb set schema test_schema2;" | mclient test
 
 Run the test suite::
 

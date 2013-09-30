@@ -1,8 +1,6 @@
-Todo/issues:
-  * Autogeneration of primary keys doesn't work!
+Need to check if these are still a issue::
   * limit/offset - Need to get working with order by
     Offset not working, but supposed to be in monetdb
-  * unicode
   * last_inserted_ids doesn't work for subselected params -
     Not currently supported at the cursor level
   * IN statement -
