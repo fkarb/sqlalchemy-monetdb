@@ -1,5 +1,4 @@
-import warnings
-import logging
+import re
 from sqlalchemy import pool, exc
 from sqlalchemy.engine import default, reflection
 from sqlalchemy import schema, util
@@ -7,8 +6,6 @@ from sqlalchemy import types as sqltypes
 from sqlalchemy.sql import compiler
 from sqlalchemy.types import INTEGER, BIGINT, SMALLINT, VARCHAR, CHAR, TEXT,\
     FLOAT, DATE, BOOLEAN, DECIMAL, TIMESTAMP, TIME, BLOB
-
-logger = logging.getLogger(__name__)
 
 
 class INET(sqltypes.TypeEngine):
@@ -112,7 +109,6 @@ class MDBDDLCompiler(compiler.DDLCompiler):
                 self.preparer.format_sequence(drop.element)
 
     def get_column_specification(self, column, **kwargs):
-        # Taken from PostgreSQL dialect
         colspec = self.preparer.format_column(column)
         impl_type = column.type.dialect_impl(self.dialect)
         if column.primary_key and \
@@ -124,38 +120,19 @@ class MDBDDLCompiler(compiler.DDLCompiler):
                     isinstance(column.default, schema.Sequence) and
                     column.default.optional
                 )):
-            if isinstance(impl_type, sqltypes.BigInteger):
-                colspec += " BIGSERIAL"
-            else:
-                colspec += " SERIAL"
+            colspec += " INT AUTO_INCREMENT"
         else:
             colspec += " " + self.dialect.type_compiler.process(column.type)
             default = self.get_column_default_string(column)
             if default is not None:
                 colspec += " DEFAULT " + default
 
-            if not column.nullable:
-                colspec += " NOT NULL"
+        if not column.nullable:
+            colspec += " NOT NULL"
         return colspec
-
-    def visit_primary_key_constraint(self, constraint):
-        """
-        Same as in sql/compiler.py but removed PRIMARY KEY statement, since
-        SERIAL implies PRIMARY KEY.
-        """
-        if len(constraint) == 0:
-            return ''
-        text = ""
-        if constraint.name is not None:
-            text += "CONSTRAINT %s " % \
-                    self.preparer.format_constraint(constraint)
-        text += self.define_constraint_deferrability(constraint)
-        return text
 
     def visit_check_constraint(self, constraint):
         util.warn("Skipped unsupported check constraint %s" % constraint.name)
-
-
 
 
 class MDBExecutionContext(default.DefaultExecutionContext):
@@ -278,26 +255,26 @@ class MDBDialect(default.DefaultDialect):
     def get_table_names(self, connection, schema=None, **kw):
         """Return a list of table names for `schema`."""
 
-        query = """
-                    SELECT name
-                    FROM sys.tables
-                    WHERE system = false
-                    AND type = 0
-                    AND schema_id = %(schema_id)s
-                """
+        q = """
+            SELECT name
+            FROM sys.tables
+            WHERE system = false
+            AND type = 0
+            AND schema_id = %(schema_id)s
+        """
         args = {"schema_id": self._schema_id(connection, schema)}
-        return [row[0] for row in connection.execute(query, args)]
+        return [row[0] for row in connection.execute(q, args)]
 
     def has_table(self, connection, table_name, schema=None):
         return table_name in self.get_table_names(connection, schema)
 
     def has_sequence(self, connection, sequence_name, schema=None):
         q = """
-                SELECT id
-                FROM sys.sequences
-                WHERE name = %(name)s
-                AND schema_id = %(schema_id)s
-            """
+            SELECT id
+            FROM sys.sequences
+            WHERE name = %(name)s
+            AND schema_id = %(schema_id)s
+        """
         args = {
             "name": sequence_name.encode(self.encoding),
             "schema_id": self._schema_id(connection, schema)
@@ -329,17 +306,17 @@ class MDBDialect(default.DefaultDialect):
         """Fetch the id for schema.table_name, defaulting to current schema if
         schema is None
         """
-        query = """
-                SELECT id
-                FROM sys.tables
-                WHERE name = %(name)s
-                AND schema_id = %(schema_id)s
-            """
+        q = """
+            SELECT id
+            FROM sys.tables
+            WHERE name = %(name)s
+            AND schema_id = %(schema_id)s
+        """
         args = {
             "name": table_name,
             "schema_id": self._schema_id(connection, schema_name)
         }
-        c = connection.execute(query, )
+        c = connection.execute(q, args)
 
         table_id = c.scalar()
         if table_id is None:
@@ -347,31 +324,14 @@ class MDBDialect(default.DefaultDialect):
 
         return table_id
 
-    def get_primary_keys(self, connection, table_name, schema=None, **kw):
-        """Return information about primary keys in `table_name`.
-
-        Given a :class:`.Connection`, a string
-        `table_name`, and an optional string `schema`, return primary
-        key information as a list of column names.
-
-        """
-        query = """
-            SELECT objects.name
-            FROM sys.keys
-            JOIN sys.objects USING (id)
-            WHERE keys.table_id = %(table_id)s
-        """
-        args = {"table_id": self._table_id(connection, table_name, schema)}
-        c = connection.execute(query, args)
-        return [row.name for row in c]
-
     def get_columns(self, connection, table_name, schema=None, **kw):
-        query = """
+        q = """
             SELECT id, name, type, "default", "null", type_digits, type_scale
             FROM sys.columns
-            WHERE columns.table_id = %(table_id)s"""
+            WHERE columns.table_id = %(table_id)s
+        """
         args = {"table_id": self._table_id(connection, table_name, schema)}
-        c = connection.execute(query, args)
+        c = connection.execute(q, args)
 
         result = []
         for row in c:
@@ -383,18 +343,28 @@ class MDBDialect(default.DefaultDialect):
                 args = (row.type_digits, row.type_scale)
             col_type = MONETDB_TYPE_MAP.get(row.type, None)
             if col_type is None:
-                msg = "Did not recognize type '%s' of column '%s', setting to nulltype" % (row.type, name)
-                logger.warning(msg)
-                warnings.warn(msg)
+                msg = "Did not recognize type '%s' of column '%s'," \
+                      " setting to nulltype" % (row.type, name)
+                util.warn(msg)
                 col_type = sqltypes.NULLTYPE
             if col_type:
                 col_type = col_type(*args)
+
+            # monetdb translates an AUTO INCREMENT into a sequence
+            autoincrement = False
+            if row.default is not None:
+                r = r"""next value for \"(\w*)\"\.\"(\w*)"$"""
+                match = re.search(r, row.default)
+                if match is not None:
+                    seq_schema = match.group(1)
+                    seq = match.group(2)
+                    autoincrement = True
 
             column = {
                 "name": name,
                 "type": col_type,
                 "default": row.default,
-                "autoincrement": False,
+                "autoincrement": autoincrement,
                 "nullable": row.null == "true"
                 }
 
@@ -402,20 +372,44 @@ class MDBDialect(default.DefaultDialect):
         return result
 
     def get_foreign_keys(self, connection, table_name, schema=None, **kw):
-        """Return information about foreign_keys in `table_name`."""
+        """Return information about foreign_keys in `table_name`.
 
-        query = """
+        Given a string `table_name`, and an optional string `schema`, return
+        foreign key information as a list of dicts with these keys:
+
+        constrained_columns
+          a list of column names that make up the foreign key
+
+        referred_schema
+          the name of the referred schema
+
+        referred_table
+          the name of the referred table
+
+        referred_columns
+          a list of column names in the referred table that correspond to
+          constrained_columns
+
+        name
+          optional name of the foreign key constraint.
+
+        \**kw
+          other options passed to the dialect's get_foreign_keys() method.
+
+        """
+
+        q = """
             SELECT
-                fkkey.name AS name,
-                fkschema.name AS fktable_schema,
-                fktable.name AS fktable_name,
-                fkkeycol.name AS fkcolumn_name,
-                fktable.id AS fktable_id,
-                pkschema.name AS pktable_schema,
-                pktable.name AS pktable_name,
-                pkkeycol.name AS pkcolumn_name,
-                pktable.id AS pktable_id,
-                pkkeycol.nr AS key_seq
+            fkkey.name AS name,
+            fkschema.name AS fktable_schema,
+            fktable.name AS fktable_name,
+            fkkeycol.name AS fkcolumn_name,
+            fktable.id AS fktable_id,
+            pkschema.name AS pktable_schema,
+            pktable.name AS pktable_name,
+            pkkeycol.name AS pkcolumn_name,
+            pktable.id AS pktable_id,
+            pkkeycol.nr AS key_seq
             FROM sys.keys AS fkkey
             JOIN sys.tables AS fktable ON (fktable.id = fkkey.table_id)
             JOIN sys.objects AS fkkeycol ON (fkkey.id = fkkeycol.id)
@@ -431,7 +425,7 @@ class MDBDialect(default.DefaultDialect):
             ORDER BY name, key_seq
         """
         args = {"table_id": self._table_id(connection, table_name, schema)}
-        c = connection.execute(query, args)
+        c = connection.execute(q, args)
 
         results = []
         key_data = {}
@@ -466,14 +460,14 @@ class MDBDialect(default.DefaultDialect):
         return results
 
     def get_indexes(self, connection, table_name, schema=None, **kw):
-        query = """
-                    SELECT idxs.name, objects.name AS "column_name"
-                    FROM sys.idxs
-                    JOIN sys.objects USING (id)
-                    WHERE table_id = %(table_id)s
-                    ORDER BY idxs.name, objects.nr
-                """
-        c = connection.execute(query, {
+        q = """
+            SELECT idxs.name, objects.name AS "column_name"
+            FROM sys.idxs
+            JOIN sys.objects USING (id)
+            WHERE table_id = %(table_id)s
+            ORDER BY idxs.name, objects.nr
+        """
+        c = connection.execute(q, {
             "table_id": self._table_id(connection, table_name, schema)})
 
         results = []
@@ -525,17 +519,17 @@ class MDBDialect(default.DefaultDialect):
         definition.
         """
 
-        s = """
-                SELECT query FROM sys.tables
-                WHERE type = 1
-                AND name = %(name)s
-                AND schema_id = %(schema_id)s
-            """
+        q = """
+            SELECT query FROM sys.tables
+            WHERE type = 1
+            AND name = %(name)s
+            AND schema_id = %(schema_id)s
+        """
         args = {
             "name": view_name,
             "schema_id": self._schema_id(connection, schema)
         }
-        return connection.execute(s, args).scalar()
+        return connection.execute(q, args).scalar()
 
     def get_view_names(self, connection, schema=None, **kw):
         """Return a list of all view names available in the database.
@@ -543,14 +537,15 @@ class MDBDialect(default.DefaultDialect):
         schema:
           Optional, retrieve names from a non-default schema.
         """
-        s = """
-                SELECT name
-                FROM sys.tables
-                WHERE type = 1
-                AND schema_id = %(schema_id)s
-            """
+        q = """
+            SELECT name
+            FROM sys.tables
+            WHERE type = 1
+            AND schema_id = %(schema_id)s
+        """
         args = {"schema_id": self._schema_id(connection, schema)}
-        return [row[0] for row in connection.execute(s, args)]
+        return [row[0] for row in connection.execute(q, args)]
+
 
     def _get_default_schema_name(self, connection):
         """Return the string name of the currently selected schema from
@@ -561,3 +556,36 @@ class MDBDialect(default.DefaultDialect):
         once upon first connect.
         """
         return connection.execute("SELECT CURRENT_SCHEMA").scalar()
+
+
+    def get_pk_constraint(self, connection, table_name, schema=None, **kw):
+        """Return information about primary key constraint on `table_name`.
+
+        Given a string `table_name`, and an optional string `schema`, return
+        primary key information as a dictionary with these keys:
+
+        constrained_columns
+          a list of column names that make up the primary key
+
+        name
+          optional name of the primary key constraint.
+
+        """
+        q = """
+        SELECT "objects"."name" AS col, keys.name as name
+                 FROM "sys"."keys" AS "keys",
+                         "sys"."objects" AS "objects",
+                         "sys"."tables" AS "tables",
+                         "sys"."schemas" AS "schemas"
+                 WHERE "keys"."id" = "objects"."id"
+                         AND "keys"."table_id" = "tables"."id"
+                         AND "tables"."schema_id" = "schemas"."id"
+                         AND "keys"."type" = 0
+                         AND "tables"."id" = %(table_id)s
+        """
+        args = {"table_id": self._table_id(connection, table_name, schema)}
+        c = connection.execute(q, args)
+        table = c.fetchall()
+        cols = [c[0] for c in table]
+        name = table[0][1]
+        return {'constrained_columns': cols, 'name': name}
