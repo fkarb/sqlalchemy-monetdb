@@ -9,6 +9,7 @@ readme = os.path.join(os.path.dirname(__file__), 'README.rst')
 
 setup_params = dict(
     name="sqlalchemy_monetdb",
+    version="0.1",
     description="SQLAlchemy dialect for MonetDB",
     long_description=open(readme).read(),
     classifiers=[
