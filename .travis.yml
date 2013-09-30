@@ -22,10 +22,9 @@ before_install:
 
 install:
   - pip install -r requirements.txt --use-mirrors
-  - pip install --use-mirrors nose mock
+  - pip install --use-mirrors nose mock coverage
   - ./setup.py install
 script:
-  - touch bananaproject/settings/local.py
   - ./run_tests.py
 branches:
   only:
