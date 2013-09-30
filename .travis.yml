@@ -13,8 +13,8 @@ before_install:
  - sudo service monetdb5-sql start
  - sudo monetdbd set control=yes /var/lib/monetdb
  - sudo monetdbd set passphrase=testdb /var/lib/monetdb
- - sudo monetdb create demo
- - sudo monetdb release demo
+ - sudo monetdb create test
+ - sudo monetdb release test
  - echo -e "user=monetdb\npassword=monetdb\n" > ~/.monetdb
  - echo "create schema test_schema;" | mclient test
  - echo "create schema test_schema2;" | mclient test
