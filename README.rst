@@ -1,6 +1,8 @@
 MonetDB dialect for SQLAlchemy
 ==============================
 
+.. image:: https://travis-ci.org/gijzelaerr/sqlalchemy-monetdb.png?branch=master   :target: https://travis-ci.org/gijzelaerr/sqlalchemy-monetdb
+
 installation
 ------------
 
