@@ -15,9 +15,9 @@ before_install:
  - sudo monetdbd set passphrase=testdb /var/lib/monetdb
  - sudo monetdb create demo
  - sudo monetdb release demo
- - echo "create schema test_schema;" | sudo mclient test
- - echo "create schema test_schema2;" | sudo mclient test
- - echo "alter user monetdb set schema test_schema2;" | sudo mclient test
+ - echo "create schema test_schema;" | mclient test
+ - echo "create schema test_schema2;" | mclient test
+ - echo "alter user monetdb set schema test_schema2;" | mclient test
 
 install:
   - pip install -r requirements.txt --use-mirrors
