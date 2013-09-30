@@ -4,7 +4,7 @@ Setup for SQLAlchemy backend for MonetDB
 """
 from setuptools import find_packages, setup
 import os
-readme = os.path.join(os.path.dirname(__file__), 'README.md')
+readme = os.path.join(os.path.dirname(__file__), 'README.rst')
 
 
 setup_params = dict(

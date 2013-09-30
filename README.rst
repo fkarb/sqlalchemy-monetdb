@@ -26,21 +26,22 @@ this folder to your PYTHONPATH and register this dialect with SQLAlchemy::
 testing
 -------
 
-To run the test suite create a database test::
+you need to have nose and mock installed::
+
+    $ pip install nose mock
+
+create a database test::
 
     $ monetdb create test && monetdb release test
 
 Create a test schema::
 
-    $ echo "create schema test_schema;" | mclient demo
+    $ echo "create schema test_schema;" | mclient test
 
 Run the test suite::
 
     $ ./test_suite.py
 
-*note*: you need to have nose and mock installed::
-
-    $ pip install nose mock
 
 
 more info
@@ -50,8 +51,9 @@ more info
  * http://www.monetdb.org/
 
 
-credits
+Authors
 -------
 
-This is based on Matt Harrison's earlier MonetDB dialect for SA from here:
-http://www.sqlalchemy.org/trac/ticket/874#no1.
+ * Matt Harrison
+ * Pete Hollobon
+ * Gijs Molenaar
