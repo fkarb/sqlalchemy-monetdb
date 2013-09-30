@@ -9,13 +9,13 @@ before_install:
  - sudo apt-get update -qq
  - sudo apt-get install -qq monetdb5-sql monetdb-client
  - sudo usermod -a -G monetdb $USER
- - sudo sh -c "echo 'STARTUP=yes\nDBFARM=/var/lib/monetdb\n' > /etc/default/monetdb5-sql"
+ - sudo sh -c "echo -e 'STARTUP=yes\nDBFARM=/var/lib/monetdb\n' > /etc/default/monetdb5-sql"
  - sudo service monetdb5-sql start
  - sudo monetdbd set control=yes /var/lib/monetdb
  - sudo monetdbd set passphrase=testdb /var/lib/monetdb
  - sudo monetdb create demo
  - sudo monetdb release demo
- - echo "user=monetdb\npassword=monetdb\n" > ~/.monetdb
+ - echo -e "user=monetdb\npassword=monetdb\n" > ~/.monetdb
  - echo "create schema test_schema;" | mclient test
  - echo "create schema test_schema2;" | mclient test
  - echo "alter user monetdb set schema test_schema2;" | mclient test
