@@ -8,10 +8,15 @@ MonetDB dialect for SQLAlchemy
 installation
 ------------
 
-to install this dialect run::
+To install this dialect run::
+
+    $ pip install sqlalchemy_monetdb
+
+or from source::
 
     $ pip install -r ./requirements.txt
     $ python ./setup.py install
+
 
 usage
 -----
