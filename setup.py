@@ -9,22 +9,22 @@ readme = os.path.join(os.path.dirname(__file__), 'README.rst')
 
 setup_params = dict(
     name="sqlalchemy_monetdb",
-    version="0.1",
+    version="0.2",
     description="SQLAlchemy dialect for MonetDB",
     author="Gijs Molenaar",
     author_email="gijsmolenaar@gmail.com",
     long_description=open(readme).read(),
     classifiers=[
-      'Development Status :: 4 - Beta',
-      'Environment :: Console',
-      'Intended Audience :: Developers',
-      'Programming Language :: Python',
-      'Programming Language :: Python :: 3',
-      'Programming Language :: Python :: Implementation :: CPython',
-      'Programming Language :: Python :: Implementation :: PyPy',
-      'Topic :: Database :: Front-Ends',
-      ],
-    keywords='MonetDB  SQLAlchemy',
+        'Development Status :: 4 - Beta',
+        'Environment :: Console',
+        'Intended Audience :: Developers',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: Implementation :: CPython',
+        'Programming Language :: Python :: Implementation :: PyPy',
+        'Topic :: Database :: Front-Ends',
+        ],
+    keywords='MonetDB SQLAlchemy',
     packages=find_packages(),
     include_package_data=True,
     tests_require=['nose >= 0.11'],
@@ -34,6 +34,10 @@ setup_params = dict(
         "sqlalchemy.dialects": ["monetdb = sqlalchemy_monetdb.base:MDBDialect"]
     },
     license="MIT",
+    install_requires=[
+        'python-monetdb',
+        'sqlalchemy',
+        ]
 )
 
 if __name__ == '__main__':
