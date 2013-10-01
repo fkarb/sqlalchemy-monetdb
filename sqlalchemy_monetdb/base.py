@@ -144,7 +144,7 @@ class MDBExecutionContext(default.DefaultExecutionContext):
             elif isinstance(column.type, sqltypes.Integer) and isinstance(column.default, schema.Sequence):
                 exc = "SELECT NEXT VALUE FOR %s" \
                       % self.dialect.identifier_preparer.format_sequence(column.sequence)
-                next_value = self.execute_string(exc.encode(self.dialect.encoding))
+                next_value = self.execute_string(exc)
                 return next_value
         default_value = super(MDBExecutionContext, self).get_column_default(column)
         return default_value
@@ -221,10 +221,10 @@ class MDBIdentifierPreparer(compiler.IdentifierPreparer):
 
 class MDBDialect(default.DefaultDialect):
     name = "monetdb"
-    # preexecute_pk_sequences = True
-    # supports_pk_autoincrement = False #setting to False for prefetch...
+    preexecute_pk_sequences = True
+    supports_pk_autoincrement = True
     supports_sequences = True
-    # sequences_optional = True  -- check
+    sequences_optional = True
     supports_native_decimal = True
     supports_default_values = True
     supports_native_boolean = True
@@ -276,7 +276,7 @@ class MDBDialect(default.DefaultDialect):
             AND schema_id = %(schema_id)s
         """
         args = {
-            "name": sequence_name.encode(self.encoding),
+            "name": sequence_name,
             "schema_id": self._schema_id(connection, schema)
         }
         cursor = connection.execute(q, args)
