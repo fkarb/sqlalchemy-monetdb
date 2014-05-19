@@ -30,7 +30,7 @@ If you don't want to install this library (for example during development) add
 this folder to your PYTHONPATH and register this dialect with SQLAlchemy::
 
     from sqlalchemy.dialects import registry
-    registry.register("monetdb", "sqlalchemy_monetdb", "MDBDialect")
+    registry.register("monetdb", "sqlalchemy_monetdb", "MonetDialect")
 
 testing
 -------

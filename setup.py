@@ -31,7 +31,7 @@ setup_params = dict(
     test_suite="run_tests.setup_py_test",
     zip_safe=False,
     entry_points={
-        "sqlalchemy.dialects": ["monetdb = sqlalchemy_monetdb.base:MDBDialect"]
+        "sqlalchemy.dialects": ["monetdb = sqlalchemy_monetdb.dialect:MonetDialect"]
     },
     license="MIT",
     install_requires=[

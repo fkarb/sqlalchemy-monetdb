@@ -4,7 +4,7 @@ from sqlalchemy.dialects import registry
 from sqlalchemy.testing import runner
 
 
-registry.register("monetdb", "sqlalchemy_monetdb.base", "MDBDialect")
+registry.register("monetdb", "sqlalchemy_monetdb.dialect", "MonetDialect")
 
 
 def setup_py_test():
