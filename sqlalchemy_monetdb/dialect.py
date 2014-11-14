@@ -376,3 +376,46 @@ class MonetDialect(default.DefaultDialect):
         cols = [c[0] for c in table]
         name = table[0][1]
         return {'constrained_columns': cols, 'name': name}
+
+
+    def get_unique_constraints(self, connection, table_name, schema=None, **kw):
+        """Return information about unique constraints in `table_name`.
+
+        Given a string `table_name` and an optional string `schema`, return
+        unique constraint information as a list of dicts with these keys:
+
+        name
+          the unique constraint's name
+
+        column_names
+          list of column names in order
+
+        \**kw
+          other options passed to the dialect's get_unique_constraints() method.
+
+        .. versionadded:: 0.9.0
+
+        """
+        q = """
+        SELECT "objects"."name" AS col, keys.name as name
+                 FROM "sys"."keys" AS "keys",
+                         "sys"."objects" AS "objects",
+                         "sys"."tables" AS "tables",
+                         "sys"."schemas" AS "schemas"
+                 WHERE "keys"."id" = "objects"."id"
+                         AND "keys"."table_id" = "tables"."id"
+                         AND "tables"."schema_id" = "schemas"."id"
+                         AND "keys"."type" = 1
+                         AND "tables"."id" = %(table_id)s
+        """
+        args = {"table_id": self._table_id(connection, table_name, schema)}
+        c = connection.execute(q, args)
+        table = c.fetchall()
+
+        from collections import defaultdict
+
+        col_dict = defaultdict(list)
+        for col, name in table:
+            col_dict[name].append(col)
+
+        return [{'name': n, 'column_names': c} for n, c in col_dict.items()]
