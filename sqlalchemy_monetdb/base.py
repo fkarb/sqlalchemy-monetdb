@@ -4,8 +4,7 @@ from sqlalchemy import types as sql_types
 from sqlalchemy.sql import compiler
 
 
-
-RESERVED_WORDS = {"action", "add", "admin", "after", "aggregate", "all",
+RESERVED_WORDS = {"asc", "action", "add", "admin", "after", "aggregate", "all",
                   "alter", "always", "and", "any", "as", "asymmetric", "atomic",
                   "authorization", "autoincrement", "before", "begin",
                   "between", "bigint", "bigserial", "blob", "boolean", "by",
