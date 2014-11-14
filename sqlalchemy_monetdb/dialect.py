@@ -113,6 +113,7 @@ class MonetDialect(default.DefaultDialect):
 
         return table_id
 
+
     def get_columns(self, connection, table_name, schema=None, **kw):
         q = """
             SELECT id, name, type, "default", "null", type_digits, type_scale
@@ -131,13 +132,7 @@ class MonetDialect(default.DefaultDialect):
             elif row.type == "decimal":
                 args = (row.type_digits, row.type_scale)
             col_type = MONETDB_TYPE_MAP.get(row.type, None)
-            if col_type is None:
-                msg = "Did not recognize type '%s' of column '%s'," \
-                      " setting to nulltype" % (row.type, name)
-                util.warn(msg)
-                col_type = sqltypes.NULLTYPE
-            if col_type:
-                col_type = col_type(*args)
+            col_type = col_type(*args)
 
             # monetdb translates an AUTO INCREMENT into a sequence
             autoincrement = False
@@ -154,7 +149,7 @@ class MonetDialect(default.DefaultDialect):
                 "type": col_type,
                 "default": row.default,
                 "autoincrement": autoincrement,
-                "nullable": row.null == "true"
+                "nullable": row.null,
                 }
 
             result.append(column)
@@ -318,7 +313,8 @@ class MonetDialect(default.DefaultDialect):
             "name": view_name,
             "schema_id": self._schema_id(connection, schema)
         }
-        return connection.execute(q, args).scalar()
+        return connection.execute(q, args)
+
 
     def get_view_names(self, connection, schema=None, **kw):
         """Return a list of all view names available in the database.
