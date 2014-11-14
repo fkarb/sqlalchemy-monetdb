@@ -125,7 +125,7 @@ Drop tables
 
 
 from sqlalchemy.dialects import registry
-registry.register("monetdb", "sqlalchemy_monetdb.base", "MonetDialect")
+registry.register("monetdb", "sqlalchemy_monetdb.dialect", "MonetDialect")
 
 import doctest
 doctest.testmod()
