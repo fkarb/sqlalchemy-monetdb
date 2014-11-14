@@ -112,3 +112,8 @@ class MonetCompiler(compiler.SQLCompiler):
             element.left._compiler_dispatch(self, **kwargs) +
             " <> " +
             element.right._compiler_dispatch(self, **kwargs))
+
+    def render_literal_value(self, value, type_):
+        # we need to escape backslashes
+        value = super(MonetCompiler, self).render_literal_value(value, type_)
+        return value.replace('\\', '\\\\')
