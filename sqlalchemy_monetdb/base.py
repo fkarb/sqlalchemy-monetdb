@@ -4,7 +4,7 @@ from sqlalchemy import types as sql_types
 from sqlalchemy.sql import compiler
 
 
-RESERVED_WORDS = {"asc", "action", "add", "admin", "after", "aggregate", "all",
+RESERVED_WORDS = set(["asc", "action", "add", "admin", "after", "aggregate", "all",
                   "alter", "always", "and", "any", "as", "asymmetric", "atomic",
                   "authorization", "autoincrement", "before", "begin",
                   "between", "bigint", "bigserial", "blob", "boolean", "by",
@@ -38,7 +38,7 @@ RESERVED_WORDS = {"asc", "action", "add", "admin", "after", "aggregate", "all",
                   "timestamp", "tinyint", "to", "transaction", "trigger",
                   "true", "type", "unencrypted", "union", "unique", "unknown",
                   "update", "user", "using", "values", "varchar", "view",
-                  "when", "where", "while", "with", "year", "zone"}
+                  "when", "where", "while", "with", "year", "zone"])
 
 
 class MonetExecutionContext(default.DefaultExecutionContext):
