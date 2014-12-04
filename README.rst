@@ -4,6 +4,9 @@ MonetDB dialect for SQLAlchemy
 .. image:: https://travis-ci.org/gijzelaerr/sqlalchemy-monetdb.png?branch=master
   :target: https://travis-ci.org/gijzelaerr/sqlalchemy-monetdb
 
+.. image:: https://badges.gitter.im/Join Chat.svg
+  :target: https://gitter.im/gijzelaerr/sqlalchemy-monetdb?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+
 
 installation
 ------------
