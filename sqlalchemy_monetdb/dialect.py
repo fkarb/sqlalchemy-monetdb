@@ -369,9 +369,12 @@ class MonetDialect(default.DefaultDialect):
         args = {"table_id": self._table_id(connection, table_name, schema)}
         c = connection.execute(q, args)
         table = c.fetchall()
-        cols = [c[0] for c in table]
-        name = table[0][1]
-        return {'constrained_columns': cols, 'name': name}
+        if table:
+            cols = [c[0] for c in table]
+            name = table[0][1]
+            return {'constrained_columns': cols, 'name': name}
+        else:
+            return {}
 
 
     def get_unique_constraints(self, connection, table_name, schema=None, **kw):
