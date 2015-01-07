@@ -4,18 +4,24 @@ Setup for SQLAlchemy backend for MonetDB
 """
 from setuptools import find_packages, setup
 import os
-readme = os.path.join(os.path.dirname(__file__), 'README.rst')
 
+from sqlalchemy_monetdb import __version__
+
+
+readme = open(os.path.join(os.path.dirname(__file__), 'README.rst')).read()
+
+req_file = os.path.join(os.path.dirname(__file__), 'requirements.txt')
+requirements = [i.strip() for i in open(req_file).readlines()]
 
 setup_params = dict(
     name="sqlalchemy_monetdb",
-    version="0.2",
+    version=__version__,
     description="SQLAlchemy dialect for MonetDB",
     author="Gijs Molenaar",
     author_email="gijsmolenaar@gmail.com",
-    long_description=open(readme).read(),
+    long_description=readme,
     classifiers=[
-        'Development Status :: 4 - Beta',
+        "Development Status :: 5 - Production/Stable",
         'Environment :: Console',
         'Intended Audience :: Developers',
         'Programming Language :: Python',
@@ -31,13 +37,11 @@ setup_params = dict(
     test_suite="run_tests.setup_py_test",
     zip_safe=False,
     entry_points={
-        "sqlalchemy.dialects": ["monetdb = sqlalchemy_monetdb.dialect:MonetDialect"]
+        "sqlalchemy.dialects":
+            ["monetdb = sqlalchemy_monetdb.dialect:MonetDialect"]
     },
     license="MIT",
-    install_requires=[
-        'python-monetdb',
-        'sqlalchemy',
-        ]
+    install_requires=requirements
 )
 
 if __name__ == '__main__':
