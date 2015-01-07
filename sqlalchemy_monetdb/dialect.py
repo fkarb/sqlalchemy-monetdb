@@ -1,5 +1,5 @@
 import re
-from sqlalchemy import pool, exc, util
+from sqlalchemy import pool, exc
 from sqlalchemy.engine import default, reflection
 from sqlalchemy_monetdb.base import MonetExecutionContext,\
     MonetIdentifierPreparer
@@ -11,6 +11,7 @@ from sqlalchemy_monetdb.compiler import MonetDDLCompiler, MonetTypeCompiler,\
 class MonetDialect(default.DefaultDialect):
     name = "monetdb"
     driver = "monetdb"
+
     preexecute_pk_sequences = True
     supports_pk_autoincrement = True
     supports_sequences = True
@@ -19,6 +20,7 @@ class MonetDialect(default.DefaultDialect):
     supports_default_values = True
     supports_native_boolean = True
     poolclass = pool.SingletonThreadPool
+    supports_unicode_statements = True
 
     statement_compiler = MonetCompiler
     ddl_compiler = MonetDDLCompiler
