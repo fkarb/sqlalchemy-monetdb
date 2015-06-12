@@ -7,6 +7,9 @@ MonetDB dialect for SQLAlchemy
 .. image:: https://badges.gitter.im/Join Chat.svg
   :target: https://gitter.im/gijzelaerr/sqlalchemy-monetdb?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
+This is the MonetDB dialect driver for SQLAlchemy. It used
+`pymonetdb <https://github.com/gijzelaerr/pymonetdb>`_.
+
 
 installation
 ------------
@@ -54,7 +57,7 @@ Create a test schema::
 
 Run the test suite::
 
-    $ ./test_suite.py
+    $ ./run_tests.py
 
 
 

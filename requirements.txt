@@ -1,2 +1,2 @@
-python-monetdb >= 11.19.3.2
+pymonetdb >= 0.1
 sqlalchemy >= 0.8,<1.0

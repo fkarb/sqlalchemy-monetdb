@@ -10,7 +10,7 @@ from sqlalchemy_monetdb.compiler import MonetDDLCompiler, MonetTypeCompiler,\
 
 class MonetDialect(default.DefaultDialect):
     name = "monetdb"
-    driver = "monetdb"
+    driver = "pymonetdb"
 
     preexecute_pk_sequences = True
     supports_pk_autoincrement = True
@@ -34,7 +34,7 @@ class MonetDialect(default.DefaultDialect):
 
     @classmethod
     def dbapi(cls):
-        return __import__("monetdb.sql", fromlist="sql")
+        return __import__("pymonetdb", fromlist="sql")
 
     def create_connect_args(self, url):
         opts = url.translate_connect_args()
