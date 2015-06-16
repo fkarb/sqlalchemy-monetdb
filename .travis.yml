@@ -1,34 +1,41 @@
 language: python
 python:
-  - '2.6'
-  - '2.7'
-  - '3.3'
-  - '3.4'
-  - 'pypy'
+- '2.6'
+- '2.7'
+- '3.3'
+- '3.4'
+- pypy
 before_install:
- - sudo sh -c "echo 'deb http://dev.monetdb.org/downloads/deb/ precise monetdb' > /etc/apt/sources.list.d/monetdb.list"
- - wget --output-document=- http://dev.monetdb.org/downloads/MonetDB-GPG-KEY | sudo apt-key add -
- - sudo apt-get update -qq
- - sudo apt-get install -qq monetdb5-sql monetdb-client
- - sudo usermod -a -G monetdb $USER
- - sudo sh -c "echo 'STARTUP=yes\nDBFARM=/var/lib/monetdb\n' > /etc/default/monetdb5-sql"
- - sudo service monetdb5-sql start
- - sudo monetdbd set control=yes /var/lib/monetdb
- - sudo monetdbd set passphrase=testdb /var/lib/monetdb
- - sudo monetdb create test
- - sudo monetdb release test
- - echo -e "user=monetdb\npassword=monetdb\n" > ~/.monetdb
- - echo "create schema test_schema;" | mclient test
- - echo "create schema test_schema2;" | mclient test
- - echo "alter user monetdb set schema test_schema2;" | mclient test
-
+- sudo sh -c "echo 'deb http://dev.monetdb.org/downloads/deb/ precise monetdb' > /etc/apt/sources.list.d/monetdb.list"
+- wget --output-document=- http://dev.monetdb.org/downloads/MonetDB-GPG-KEY | sudo
+  apt-key add -
+- sudo apt-get update -qq
+- sudo apt-get install -qq monetdb5-sql monetdb-client
+- sudo usermod -a -G monetdb $USER
+- sudo sh -c "echo 'STARTUP=yes\nDBFARM=/var/lib/monetdb\n' > /etc/default/monetdb5-sql"
+- sudo service monetdb5-sql start
+- sudo monetdbd set control=yes /var/lib/monetdb
+- sudo monetdbd set passphrase=testdb /var/lib/monetdb
+- sudo monetdb create test
+- sudo monetdb release test
+- echo -e "user=monetdb\npassword=monetdb\n" > ~/.monetdb
+- echo "create schema test_schema;" | mclient test
+- echo "create schema test_schema2;" | mclient test
+- echo "alter user monetdb set schema test_schema2;" | mclient test
 install:
-  - pip install "sqlalchemy>= 0.8,<1.0"
-  - pip install -r requirements.txt --use-mirrors
-  - pip install --use-mirrors nose mock coverage
-  - ./setup.py install
+- pip install "sqlalchemy>= 0.8,<1.0"
+- pip install -r requirements.txt --use-mirrors
+- pip install --use-mirrors nose mock coverage
+- "./setup.py install"
 script:
-  - ./run_tests.py
+- "./run_tests.py"
 branches:
   only:
-    - master
+  - master
+deploy:
+  provider: pypi
+  user: gijzelaerr
+  password:
+    secure: gH93ltiwnVy5MsZvW0AM6ZNYIc9VGU5Hw/UH3jb0Conz4Rgs5idb9zjPMUa93z/l7t6YjNgLEXt5BtAXkkphDCW0ugwxDH3JXwn096A+hPhu7yK1weUtS+XyHhVGdyZijclIS9AmqxFYSWav681I5J0P3P80F+yu4VgE1nYnILA=
+  on:
+    tags: true
