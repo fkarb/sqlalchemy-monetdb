@@ -1,0 +1,7 @@
+# 0.9.1
+
+changes since 0.9
+
+ - switch pymonetdb
+ - fix inline default value from sequence
+ - don't force pre 1.0 release
