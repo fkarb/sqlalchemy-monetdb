@@ -23,6 +23,7 @@ before_install:
  - echo "alter user monetdb set schema test_schema2;" | mclient test
 
 install:
+  - pip install "sqlalchemy>= 0.8,<1.0"
   - pip install -r requirements.txt --use-mirrors
   - pip install --use-mirrors nose mock coverage
   - ./setup.py install
