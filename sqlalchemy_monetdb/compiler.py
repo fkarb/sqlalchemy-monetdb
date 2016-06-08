@@ -79,7 +79,7 @@ class MonetCompiler(compiler.SQLCompiler):
               % self.dialect.identifier_preparer.format_sequence(seq)
         return exc
 
-    def limit_clause(self, select):
+    def limit_clause(self, select, **kw):
         text = ""
         if select._limit is not None:
             text += "\nLIMIT " + str(select._limit)
