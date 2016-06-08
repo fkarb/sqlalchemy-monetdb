@@ -1,3 +1,11 @@
+# 0.9.2 
+
+changes since 0.9.1
+
+ - fix issue #6 - limit_clause() got an unexpected keyword
+   argument 'literal_binds' Thanks to Gustavo Brian.
+
+
 # 0.9.1
 
 changes since 0.9

@@ -2,4 +2,11 @@
 SQLAlchemy backend for MonetDB
 """
 
-__version__ = '0.9.1'
+import pkg_resources
+
+
+try:
+    __version__ = pkg_resources.require("sqlalchemy-monetdb")[0].version
+except pkg_resources.DistributionNotFound:
+    __version__ = "dev"
+

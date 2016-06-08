@@ -1,5 +1,3 @@
-python-monetdb
-sqlalchemy
 pytest
 mock
 coverage

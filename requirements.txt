@@ -1,2 +1,0 @@
-pymonetdb >= 0.1
-sqlalchemy
