@@ -204,7 +204,6 @@ class MonetDialect(default.DefaultDialect):
             JOIN sys.tables AS pktable ON (pktable.id = pkkey.table_id)
             JOIN sys.schemas AS fkschema ON (fkschema.id = fktable.schema_id)
             JOIN sys.schemas AS pkschema ON (pkschema.id = pktable.schema_id)
-            JOIN sys.tables AS pktable ON (pktable.id = pkkey.table_id)
             WHERE fkkey.rkey > -1
               AND fkkeycol.nr = pkkeycol.nr
               AND fktable.id = %(table_id)s
