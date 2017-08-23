@@ -57,3 +57,21 @@ class Requirements(SuiteRequirements):
     def sequences_optional(self):
         return exclusions.open()
 
+    @property
+    def independent_connections(self):
+        return exclusions.open()
+
+    @property
+    def temp_table_names(self):
+        """target dialect supports listing of temporary table names"""
+        return exclusions.open()
+
+    @property
+    def temporary_tables(self):
+        """target database supports temporary tables"""
+        return exclusions.open()
+
+    @property
+    def temporary_views(self):
+        """target database supports temporary views"""
+        return exclusions.closed()

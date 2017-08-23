@@ -1,11 +1,13 @@
 import re
+
 from sqlalchemy import pool, exc
 from sqlalchemy.engine import default, reflection
-from sqlalchemy_monetdb.base import MonetExecutionContext,\
+
+from sqlalchemy_monetdb.base import MonetExecutionContext, \
     MonetIdentifierPreparer
-from sqlalchemy_monetdb.types import MONETDB_TYPE_MAP
-from sqlalchemy_monetdb.compiler import MonetDDLCompiler, MonetTypeCompiler,\
+from sqlalchemy_monetdb.compiler import MonetDDLCompiler, MonetTypeCompiler, \
     MonetCompiler
+from sqlalchemy_monetdb.types import MONETDB_TYPE_MAP
 
 
 class MonetDialect(default.DefaultDialect):
@@ -55,6 +57,13 @@ class MonetDialect(default.DefaultDialect):
         """
         args = {"schema_id": self._schema_id(connection, schema)}
         return [row[0] for row in connection.execute(q, args)]
+
+    @reflection.cache
+    def get_temp_table_names(self, connection, **kw):
+        # 2097 is tmp schema, 30 is table type LOCAL TEMPORARY
+        s = "SELECT tables.name FROM sys.tables WHERE schema_id = 2097 AND type = 30"
+        rs = connection.execute(s)
+        return [row[0] for row in rs]
 
     def has_table(self, connection, table_name, schema=None):
         return table_name in self.get_table_names(connection, schema)
@@ -115,7 +124,6 @@ class MonetDialect(default.DefaultDialect):
 
         return table_id
 
-
     def get_columns(self, connection, table_name, schema=None, **kw):
         q = """
             SELECT id, name, type, "default", "null", type_digits, type_scale
@@ -152,7 +160,7 @@ class MonetDialect(default.DefaultDialect):
                 "default": row.default,
                 "autoincrement": autoincrement,
                 "nullable": row.null,
-                }
+            }
 
             result.append(column)
         return result
@@ -179,7 +187,7 @@ class MonetDialect(default.DefaultDialect):
         name
           optional name of the foreign key constraint.
 
-        \**kw
+        **kw
           other options passed to the dialect's get_foreign_keys() method.
 
         """
@@ -316,7 +324,6 @@ class MonetDialect(default.DefaultDialect):
         }
         return connection.execute(q, args)
 
-
     def get_view_names(self, connection, schema=None, **kw):
         """Return a list of all view names available in the database.
 
@@ -356,7 +363,7 @@ class MonetDialect(default.DefaultDialect):
 
         """
         q = """
-        SELECT "objects"."name" AS col, keys.name as name
+        SELECT "objects"."name" AS col, keys.name AS name
                  FROM "sys"."keys" AS "keys",
                          "sys"."objects" AS "objects",
                          "sys"."tables" AS "tables",
@@ -377,7 +384,6 @@ class MonetDialect(default.DefaultDialect):
         else:
             return {}
 
-
     def get_unique_constraints(self, connection, table_name, schema=None, **kw):
         """Return information about unique constraints in `table_name`.
 
@@ -390,14 +396,14 @@ class MonetDialect(default.DefaultDialect):
         column_names
           list of column names in order
 
-        \**kw
+        **kw
           other options passed to the dialect's get_unique_constraints() method.
 
         .. versionadded:: 0.9.0
 
         """
         q = """
-        SELECT "objects"."name" AS col, keys.name as name
+        SELECT "objects"."name" AS col, keys.name AS name
                  FROM "sys"."keys" AS "keys",
                          "sys"."objects" AS "objects",
                          "sys"."tables" AS "tables",
