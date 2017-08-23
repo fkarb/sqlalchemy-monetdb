@@ -38,3 +38,7 @@ nosetests.xml
 
 .virtualenv
 .virtualenv3
+.venv*/
+
+.cache
+
