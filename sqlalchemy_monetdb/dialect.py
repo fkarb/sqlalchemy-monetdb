@@ -1,4 +1,6 @@
 import re
+from sqlalchemy import sql, util
+from sqlalchemy import types as sqltypes
 
 from sqlalchemy import pool, exc
 from sqlalchemy.engine import default, reflection
@@ -66,7 +68,40 @@ class MonetDialect(default.DefaultDialect):
         return [row[0] for row in rs]
 
     def has_table(self, connection, table_name, schema=None):
-        return table_name in self.get_table_names(connection, schema)
+        # seems like case gets folded in pg_class...
+        if schema is None:
+            cursor = connection.execute(
+                sql.text(
+                    "select name "
+                    "from sys.tables "
+                    "where system = false "
+                    "and type = 0 "
+                    "and name=:name",
+                    bindparams=[
+                        sql.bindparam('name', util.text_type(table_name),
+                                      type_=sqltypes.Unicode)]
+                )
+            )
+        else:
+            cursor = connection.execute(
+                sql.text(
+                    "SELECT tables.name "
+                    "FROM sys.tables, sys.schemas "
+                    "WHERE tables.system = FALSE "
+                    "AND tables.schema_id = schemas.id "
+                    "AND type = 0 "
+                    "AND tables.name = :name "
+                    "AND schemas.name = :schema",
+                    bindparams=[
+                        sql.bindparam('name',
+                                      util.text_type(table_name),
+                                      type_=sqltypes.Unicode),
+                        sql.bindparam('schema',
+                                      util.text_type(schema),
+                                      type_=sqltypes.Unicode)]
+                )
+            )
+        return bool(cursor.first())
 
     def has_sequence(self, connection, sequence_name, schema=None):
         q = """

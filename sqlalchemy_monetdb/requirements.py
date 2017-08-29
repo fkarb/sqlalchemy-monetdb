@@ -73,5 +73,20 @@ class Requirements(SuiteRequirements):
 
     @property
     def temporary_views(self):
-        """target database supports temporary views"""
+        """target database supports temporary views. Well it doesn't support temporary views, but it supports views
+        of temperatory tables."""
+        return exclusions.open()
+
+
+    @property
+    def foreign_key_constraint_option_reflection(self):
+        """TODO: PostgreSQL, MonetDB and sqlite support this, so probably MoentDB also"""
         return exclusions.closed()
+
+    @property
+    def views(self):
+        """Target database must support VIEWs."""
+
+        return exclusions.open()
+
+
