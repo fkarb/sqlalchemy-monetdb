@@ -460,3 +460,12 @@ class MonetDialect(default.DefaultDialect):
             col_dict[name].append(col)
 
         return [{'name': n, 'column_names': c} for n, c in col_dict.items()]
+
+
+class MonetLiteDialect(MonetDialect):
+    name = "monetdb"
+    driver = "monetdblite"
+
+    @classmethod
+    def dbapi(cls):
+        return __import__("pymonetdb", fromlist="sql")

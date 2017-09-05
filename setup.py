@@ -5,6 +5,10 @@ Setup for SQLAlchemy backend for MonetDB
 from setuptools import find_packages, setup
 import os
 
+extras_require = {
+    'lite': ['monetdblite'],
+}
+
 readme = open(os.path.join(os.path.dirname(__file__), 'README.rst')).read()
 
 setup_params = dict(
@@ -14,6 +18,7 @@ setup_params = dict(
     author="Gijs Molenaar",
     author_email="gijsmolenaar@gmail.com",
     long_description=readme,
+    extras_require=extras_require,
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         'Environment :: Console',
@@ -31,8 +36,10 @@ setup_params = dict(
     test_suite="run_tests.setup_py_test",
     zip_safe=False,
     entry_points={
-        "sqlalchemy.dialects":
-            ["monetdb = sqlalchemy_monetdb.dialect:MonetDialect"]
+        "sqlalchemy.dialects": [
+            "monetdb = sqlalchemy_monetdb.dialect:MonetDialect",
+            "monetdb.lite = sqlalchemy_monetdb.dialect:MonetDialect",
+        ]
     },
     license="MIT",
     install_requires=['pymonetdb', 'sqlalchemy'],
