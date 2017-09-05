@@ -1,15 +1,11 @@
 #!/bin/bash -ve
 
 DATABASE="test"
-FARM="/tmp/monetdb"
 USER="monetdb"
 PASSWORD=${USER}
 
 echo -en "user=${USER}\npassword=${PASSWORD}\n" > ~/.monetdb
 
-monetdbd stop ${FARM} || true
-monetdbd create ${FARM} || true
-monetdbd start ${FARM}
 
 monetdb stop $DATABASE || true
 monetdb destroy -f $DATABASE || true
