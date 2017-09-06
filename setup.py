@@ -38,7 +38,7 @@ setup_params = dict(
     entry_points={
         "sqlalchemy.dialects": [
             "monetdb = sqlalchemy_monetdb.dialect:MonetDialect",
-            "monetdb.lite = sqlalchemy_monetdb.dialect:MonetDialect",
+            "monetdb.lite = sqlalchemy_monetdb.dialect_lite:MonetLiteDialect",
         ]
     },
     license="MIT",
