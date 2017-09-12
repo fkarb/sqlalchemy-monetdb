@@ -32,8 +32,8 @@ setup_params = dict(
     keywords='MonetDB SQLAlchemy',
     packages=find_packages(),
     include_package_data=True,
-    tests_require=['nose >= 0.11'],
-    test_suite="run_tests.setup_py_test",
+    tests_require=['pytest'],
+    test_suite="test.test_suite",
     zip_safe=False,
     entry_points={
         "sqlalchemy.dialects": [
