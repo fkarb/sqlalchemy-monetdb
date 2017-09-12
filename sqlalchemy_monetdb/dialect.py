@@ -9,7 +9,7 @@ from sqlalchemy_monetdb.base import MonetExecutionContext, \
     MonetIdentifierPreparer
 from sqlalchemy_monetdb.compiler import MonetDDLCompiler, MonetTypeCompiler, \
     MonetCompiler
-from sqlalchemy_monetdb.types import MONETDB_TYPE_MAP
+from sqlalchemy_monetdb.monetdb_types import MONETDB_TYPE_MAP
 
 
 class MonetDialect(default.DefaultDialect):
