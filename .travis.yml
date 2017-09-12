@@ -29,12 +29,11 @@ before_install:
   - echo "create schema test_schema2;" | mclient -d test
   - echo "alter user monetdb set schema test_schema2;" | mclient -d test
 install:
-  - pip install --upgrade pip
   - pip install sqlalchemy${SQLALCHEMY_VERSION}
   - pip install -r test/requirements.txt
   - pip install -e .
 script:
-  - "./run_tests.py"
+  - pytest
 deploy:
   provider: pypi
   user: gijzelaerr
