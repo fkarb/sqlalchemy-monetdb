@@ -32,6 +32,7 @@ setup_params = dict(
     keywords='MonetDB SQLAlchemy',
     packages=find_packages(),
     include_package_data=True,
+    setup_requires=['pytest-runner'],
     tests_require=['pytest'],
     test_suite="test.test_suite",
     zip_safe=False,
