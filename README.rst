@@ -1,16 +1,9 @@
 MonetDB dialect for SQLAlchemy
 ==============================
-
-.. image:: https://travis-ci.org/gijzelaerr/sqlalchemy-monetdb.png?branch=master
-  :target: https://travis-ci.org/gijzelaerr/sqlalchemy-monetdb
-
-.. image:: https://badges.gitter.im/Join Chat.svg
-  :target: https://gitter.im/gijzelaerr/sqlalchemy-monetdb?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
-
 This is the MonetDB dialect driver for SQLAlchemy.
 
 
-installation
+Installation
 ------------
 
 To install this dialect run::
@@ -22,7 +15,7 @@ or from the source folder::
     $ pip install .
 
 
-usage
+Usage
 -----
 
 To start using this dialect::
@@ -47,16 +40,16 @@ Now can start using MonetDB Lite::
     engine = create_engine('monetdb+lite:////tmp/monetdb_lite')
 
 
-more info
+More info
 ---------
 
  * http://www.sqlalchemy.org/
  * http://www.monetdb.org/
 
 
-Authors
--------
+Development
+-----------
+.. image:: https://travis-ci.org/gijzelaerr/sqlalchemy-monetdb.png?branch=master
+  :target: https://travis-ci.org/gijzelaerr/sqlalchemy-monetdb
 
- * Matt Harrison
- * Pete Hollobon
- * Gijs Molenaar
+

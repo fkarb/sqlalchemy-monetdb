@@ -1,9 +1,0 @@
-Need to check if these are still a issue::
-  * limit/offset - Need to get working with order by
-    Offset not working, but supposed to be in monetdb
-  * last_inserted_ids doesn't work for subselected params -
-    Not currently supported at the cursor level
-  * IN statement -
-    select ... where name NOT IN ('matt', 'fred')
-    will return null name
-  * constraints don't support > operators
