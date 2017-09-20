@@ -6,7 +6,7 @@ from setuptools import find_packages, setup
 import os
 
 extras_require = {
-    'lite': ['monetdblite'],
+    'lite': ['numpy', 'monetdblite'],
 }
 
 readme = open(os.path.join(os.path.dirname(__file__), 'README.rst')).read()

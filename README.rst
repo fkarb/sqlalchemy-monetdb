@@ -17,9 +17,9 @@ To install this dialect run::
 
     $ pip install sqlalchemy_monetdb
 
-or from source::
+or from the source folder::
 
-    $ python setup.py install
+    $ pip install .
 
 
 usage
@@ -31,23 +31,20 @@ To start using this dialect::
     engine = create_engine('monetdb:///demo:', echo=True)
 
 
-testing
--------
+MonetDB Lite (experimental)
+---------------------------
 
-create a database test::
+We also have experimental support for MonetDB Lite!
 
-    $ monetdb create test && monetdb release test
+For this install this dialect with an extra option::
 
-Create a test schema::
+    $ pip install sqlalchemy_monetdb[lite]
 
-    $ echo "create schema test_schema;" | mclient test
-    $ echo "create schema test_schema2;" | mclient test
-    $ echo "alter user monetdb set schema test_schema2;" | mclient test
 
-Run the test suite::
+Now can start using MonetDB Lite::
 
-    $ python setup.py test
-
+    from sqlalchemy import create_engine
+    engine = create_engine('monetdb+lite:////tmp/monetdb_lite')
 
 
 more info
