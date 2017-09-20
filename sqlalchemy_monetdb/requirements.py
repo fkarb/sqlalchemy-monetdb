@@ -73,9 +73,12 @@ class Requirements(SuiteRequirements):
 
     @property
     def temporary_views(self):
-        """target database supports temporary views. Well it doesn't support temporary views, but it supports views
-        of temperatory tables."""
-        return exclusions.open()
+        """
+        MonetDB doesn't have temporary views, but does support views of temporary tables.
+
+        TODO: disabled for now, but maybe we can enable this?
+        """
+        return exclusions.closed()
 
 
     @property
@@ -89,4 +92,7 @@ class Requirements(SuiteRequirements):
 
         return exclusions.open()
 
-
+    @property
+    def temp_table_reflection(self):
+        """TODO: disabled for now"""
+        return exclusions.open()
