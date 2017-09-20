@@ -94,5 +94,4 @@ class Requirements(SuiteRequirements):
 
     @property
     def temp_table_reflection(self):
-        """TODO: disabled for now"""
         return exclusions.open()
