@@ -1,13 +1,23 @@
 import sqlalchemy as sa
 from sqlalchemy.testing.suite import *
 from sqlalchemy.testing.suite import ComponentReflectionTest as _ComponentReflectionTest
-from sqlalchemy.testing.suite import CompoundSelectTest as _CompoundSelectTest
+
 from sqlalchemy import inspect
 from sqlalchemy.testing import eq_
 from sqlalchemy import testing
 from sqlalchemy.schema import DDL
 from sqlalchemy import event
 from sqlalchemy import MetaData
+
+
+# SQLAlchemy < 1.1 doesn't implement CompoundSelectTest
+from sqlalchemy import __version__
+major, minor = [int(i) for i in __version__.split('.')[:2]]
+if major < 1 or (major == 1 and minor < 1):
+    class _CompoundSelectTest:
+        pass
+else:
+    from sqlalchemy.testing.suite import CompoundSelectTest as _CompoundSelectTest
 
 
 class ComponentReflectionTest(_ComponentReflectionTest):
