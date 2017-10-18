@@ -1,6 +1,7 @@
 import sqlalchemy as sa
 from sqlalchemy.testing.suite import *
 from sqlalchemy.testing.suite import ComponentReflectionTest as _ComponentReflectionTest
+from sqlalchemy.testing.suite import CompoundSelectTest as _CompoundSelectTest
 from sqlalchemy import inspect
 from sqlalchemy.testing import eq_
 from sqlalchemy import testing
@@ -126,3 +127,17 @@ class ComponentReflectionTest(_ComponentReflectionTest):
             cls.define_views(metadata, schema)
         if not schema and testing.requires.temp_table_reflection.enabled:
             cls.define_temp_tables(metadata)
+
+
+class CompoundSelectTest(_CompoundSelectTest):
+    """
+    Disable tests here since we don't support order by within unions
+
+    https://www.monetdb.org/bugzilla/show_bug.cgi?id=6434
+    """
+
+    def test_distinct_selectable_in_unions(self):
+        pass
+
+    def test_limit_offset_aliased_selectable_in_unions(self):
+        pass
