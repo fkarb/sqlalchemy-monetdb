@@ -95,3 +95,14 @@ class Requirements(SuiteRequirements):
     @property
     def temp_table_reflection(self):
         return exclusions.open()
+
+    @property
+    def bound_limit_offset(self):
+        """target database can render LIMIT and/or OFFSET using a bound
+        parameter
+
+        open by default, but closed since raises:
+
+        sqlalchemy.exc.CompileError: This SELECT structure does not use a simple integer value for offset
+        """
+        return exclusions.closed()
