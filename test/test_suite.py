@@ -1,6 +1,7 @@
 import sqlalchemy as sa
 from sqlalchemy.testing.suite import *
 from sqlalchemy.testing.suite import ComponentReflectionTest as _ComponentReflectionTest
+from sqlalchemy.testing.suite import ExceptionTest as _ExceptionTest
 
 from sqlalchemy import inspect
 from sqlalchemy.testing import eq_
@@ -8,16 +9,6 @@ from sqlalchemy import testing
 from sqlalchemy.schema import DDL
 from sqlalchemy import event
 from sqlalchemy import MetaData
-
-
-# SQLAlchemy < 1.1 doesn't implement CompoundSelectTest
-from sqlalchemy import __version__
-major, minor = [int(i) for i in __version__.split('.')[:2]]
-if major < 1 or (major == 1 and minor < 1):
-    class _CompoundSelectTest:
-        pass
-else:
-    from sqlalchemy.testing.suite import CompoundSelectTest as _CompoundSelectTest
 
 
 class ComponentReflectionTest(_ComponentReflectionTest):
@@ -139,15 +130,22 @@ class ComponentReflectionTest(_ComponentReflectionTest):
             cls.define_temp_tables(metadata)
 
 
-class CompoundSelectTest(_CompoundSelectTest):
+class ExceptionTest(_ExceptionTest):
     """
-    Disable tests here since we don't support order by within unions
+    overriding this since a bug in test suite:
 
-    https://www.monetdb.org/bugzilla/show_bug.cgi?id=6434
+    https://gerrit.sqlalchemy.org/#/c/576/
     """
+    @requirements.duplicate_key_raises_integrity_error
+    def test_integrity_error(self):
 
-    def test_distinct_selectable_in_unions(self):
-        pass
+        def inner():
+            with config.db.begin() as conn:
+                conn.execute(self.tables.manual_pk.insert(), {'id': 1, 'data': 'd1'})
+                conn.execute(self.tables.manual_pk.insert(), {'id': 1, 'data': 'd1'})
 
-    def test_limit_offset_aliased_selectable_in_unions(self):
-        pass
+        assert_raises(
+            exc.IntegrityError,
+            inner
+        )
+
