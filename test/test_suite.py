@@ -2,6 +2,7 @@ import sqlalchemy as sa
 from sqlalchemy.testing.suite import *
 from sqlalchemy.testing.suite import ComponentReflectionTest as _ComponentReflectionTest
 from sqlalchemy.testing.suite import ExceptionTest as _ExceptionTest
+from sqlalchemy.testing.suite import OrderByLabelTest as _OrderByLabelTest
 
 from sqlalchemy import inspect
 from sqlalchemy.testing import eq_
@@ -148,4 +149,14 @@ class ExceptionTest(_ExceptionTest):
             exc.IntegrityError,
             inner
         )
+
+
+class OrderByLabelTest(_OrderByLabelTest):
+    def test_group_by_composed(self):
+        """
+        Disable this for now
+
+        https://groups.google.com/forum/#!topic/sqlalchemy/r4X7ddN4rgA
+        """
+        pass
 
