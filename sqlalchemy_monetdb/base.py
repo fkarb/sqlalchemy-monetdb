@@ -50,3 +50,5 @@ class MonetIdentifierPreparer(compiler.IdentifierPreparer):
 
     def __init__(self, *args, **kwargs):
         super(MonetIdentifierPreparer, self).__init__(*args, **kwargs)
+
+        self._double_percents = False
