@@ -155,3 +155,13 @@ class Requirements(SuiteRequirements):
     @property
     def broken_cx_oracle6_numerics(config):
         return exclusions.closed()
+
+    @property
+    def implicitly_named_constraints(self):
+        """target database must apply names to unnamed constraints."""
+        return exclusions.open()
+
+    @property
+    def unique_constraint_reflection(self):
+        """target dialect supports reflection of unique constraints"""
+        return exclusions.closed()
