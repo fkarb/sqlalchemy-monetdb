@@ -39,7 +39,7 @@ class ComponentReflectionTest(_ComponentReflectionTest):
     @testing.requires.temp_table_reflection
     @testing.requires.unique_constraint_reflection
     def test_get_temp_table_unique_constraints(self):
-        # TODO: it looks like MonetDB doesn't show constains for temp tables (yet)
+        # TODO: it looks like MonetDB doesn't show constrains for temp tables (yet)
         return
 
     @classmethod
@@ -200,6 +200,7 @@ class OrderByLabelTest(_OrderByLabelTest):
         """
         Disable this for now
 
+        https://github.com/gijzelaerr/sqlalchemy-monetdb/issues/21
         https://groups.google.com/forum/#!topic/sqlalchemy/r4X7ddN4rgA
         """
         pass

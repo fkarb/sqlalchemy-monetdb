@@ -1,4 +1,24 @@
-# 0.9.2 
+# 1.0.0
+
+changes since 0.9.2
+
+ - Cleanup/modernize the test suite, get working with SQLalchemy 1.0, 1.1 and 1.2 #27
+ - TextTest failing bug sqlalchemy-1.2 #26
+ - EscapingTest fail for sqlalchemy==1.2.0b3 bug sqlalchemy-1.2 #25
+ - test_integrity_error test fail #17
+ - test_limit_offset_in_unions_from_alias test fail #14
+ - test_limit_offset_selectable_in_unions test fail #15
+ - test_order_by_selectable_in_unions test fail #16
+ - table name quoted wrong #11
+ - check old todo list if issues are still a problem #22
+ - test_bound_limit_offset test fail #19
+ - test_bound_limit test fail #18
+ - test_bound_offset test fail #20
+ - fix all temp table related issues #23
+ - Test suite fails with latest SQLALchemy >= 1.0 bug #1
+
+
+# 0.9.2
 
 changes since 0.9.1
 
