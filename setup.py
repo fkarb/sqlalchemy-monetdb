@@ -17,6 +17,7 @@ setup_params = dict(
     description="SQLAlchemy dialect for MonetDB",
     author="Gijs Molenaar",
     author_email="gijsmolenaar@gmail.com",
+    url="https://github.com/gijzelaerr/sqlalchemy-monetdb",
     long_description=readme,
     extras_require=extras_require,
     classifiers=[
