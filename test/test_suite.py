@@ -1,14 +1,16 @@
 import sqlalchemy as sa
+from sqlalchemy.testing.assertions import AssertsCompiledSQL
 from sqlalchemy.testing.suite import *
 from sqlalchemy.testing.suite import ComponentReflectionTest as _ComponentReflectionTest
 from sqlalchemy.testing.suite import ExceptionTest as _ExceptionTest
 from sqlalchemy.testing.suite import OrderByLabelTest as _OrderByLabelTest
 from sqlalchemy import inspect
-from sqlalchemy.testing import eq_, is_
+from sqlalchemy.testing import fixtures, eq_, is_
 from sqlalchemy import testing
 from sqlalchemy.schema import DDL, Index
 from sqlalchemy import event
 from sqlalchemy import MetaData
+from sqlalchemy.sql.expression import literal
 
 major, minor = [int(i) for i in sa.__version__.split('.')[:2]]
 
@@ -205,3 +207,13 @@ class OrderByLabelTest(_OrderByLabelTest):
         """
         pass
 
+
+class CompileTest(fixtures.TestBase, AssertsCompiledSQL):
+
+    def test_ne_operator(self):
+
+        self.assert_compile(
+            literal(5) != literal(10),
+            '%(param_1)s <> %(param_2)s',
+            checkparams={'param_1': 5, 'param_2': 10}
+        )
