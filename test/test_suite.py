@@ -1,5 +1,5 @@
 import sqlalchemy as sa
-from sqlalchemy.testing.assertions import AssertsCompiledSQL
+from sqlalchemy.testing.assertions import AssertsCompiledSQL, AssertsExecutionResults
 from sqlalchemy.testing.suite import *
 from sqlalchemy.testing.suite import ComponentReflectionTest as _ComponentReflectionTest
 from sqlalchemy.testing.suite import ExceptionTest as _ExceptionTest
@@ -11,6 +11,9 @@ from sqlalchemy.schema import DDL, Index
 from sqlalchemy import event
 from sqlalchemy import MetaData
 from sqlalchemy.sql.expression import literal
+
+import sqlalchemy_monetdb.monetdb_types as mtypes
+
 
 major, minor = [int(i) for i in sa.__version__.split('.')[:2]]
 
@@ -217,3 +220,20 @@ class CompileTest(fixtures.TestBase, AssertsCompiledSQL):
             '%(param_1)s <> %(param_2)s',
             checkparams={'param_1': 5, 'param_2': 10}
         )
+
+
+class TypesTest(fixtures.TestBase, AssertsCompiledSQL):
+
+    def test_numeric(self):
+        columns = [
+            # column type, args, kwargs, expected ddl
+            (mtypes.TINYINT, [], {}, 'TINYINT'),
+        ]
+
+        for type_, args, kw, res in columns:
+            type_inst = type_(*args, **kw)
+
+            self.assert_compile(
+                type_inst,
+                res
+            )

@@ -56,6 +56,9 @@ class MonetTypeCompiler(compiler.GenericTypeCompiler):
     def visit_WRD(self, type_):
         return "WRD"
 
+    def visit_TINYINT(self, type_):
+        return "TINYINT"
+
     def visit_datetime(self, type_):
         return self.visit_TIMESTAMP(type_)
 
