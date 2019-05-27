@@ -120,3 +120,9 @@ class MonetCompiler(compiler.SQLCompiler):
         # we need to escape backslashes
         value = super(MonetCompiler, self).render_literal_value(value, type_)
         return value.replace('\\', '\\\\')
+
+    def update_from_clause(self, update_stmt, from_table, extra_froms, from_hints, **kw):
+        return "FROM " + ', '.join(t._compiler_dispatch(self, asfrom=True,
+                                                        fromhints=from_hints, **kw)
+                                   for t in extra_froms)
+
