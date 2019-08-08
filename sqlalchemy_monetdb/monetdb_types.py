@@ -41,5 +41,6 @@ MONETDB_TYPE_MAP = {
     'smallint': SMALLINT,
     'time': TIME,
     'timestamp': TIMESTAMP,
+    'timestamptz': TIMESTAMP,
     'varchar': VARCHAR,
 }
