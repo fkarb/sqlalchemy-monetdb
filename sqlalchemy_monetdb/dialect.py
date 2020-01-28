@@ -171,13 +171,18 @@ class MonetDialect(default.DefaultDialect):
         result = []
         for row in c:
             args = ()
+            kwargs = {}
             name = row.name
             if row.type in ("char", "varchar"):
                 args = (row.type_digits,)
             elif row.type == "decimal":
                 args = (row.type_digits, row.type_scale)
+            elif row.type == 'timestamptz':
+                kwargs = {'timezone': True}
             col_type = MONETDB_TYPE_MAP.get(row.type, None)
-            col_type = col_type(*args)
+            if col_type is None:
+                raise TypeError("Can't resolve type {0} (column '{1}')".format(col_type, name))
+            col_type = col_type(*args, **kwargs)
 
             # monetdb translates an AUTO INCREMENT into a sequence
             autoincrement = False
