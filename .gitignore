@@ -40,6 +40,7 @@ nosetests.xml
 .virtualenv
 .virtualenv3
 .venv*/
+venv/
 
 .cache
 
