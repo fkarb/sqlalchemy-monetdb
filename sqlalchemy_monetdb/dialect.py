@@ -11,6 +11,14 @@ from sqlalchemy_monetdb.compiler import MonetDDLCompiler, MonetTypeCompiler, \
     MonetCompiler
 from sqlalchemy_monetdb.monetdb_types import MONETDB_TYPE_MAP
 
+try:
+    import alembic
+
+    class MonetImpl(alembic.ddl.impl.DefaultImpl):
+        __dialect__ = 'monetdb'
+except ImportError:
+    pass
+
 
 class MonetDialect(default.DefaultDialect):
     name = "monetdb"
