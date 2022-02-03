@@ -85,9 +85,9 @@ class MonetDialect(default.DefaultDialect):
                     "where system = false "
                     "and type = 0 "
                     "and name=:name",
-                    bindparams=[
-                        sql.bindparam('name', util.text_type(table_name),
-                                      type_=sqltypes.Unicode)]
+                ).bindparams(
+                    sql.bindparam('name', util.text_type(table_name),
+                                  type_=sqltypes.Unicode)
                 )
             )
         else:
