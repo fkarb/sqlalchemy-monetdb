@@ -21,6 +21,7 @@ except ImportError:
 
 
 class MonetDialect(default.DefaultDialect):
+    supports_statement_cache = False
     name = "monetdb"
     driver = "pymonetdb"
 
