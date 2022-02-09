@@ -1,8 +1,8 @@
-#!/usr/bin/env bash -ve
+#!/usr/bin/bash
 
 FARM="/tmp/monetdb"
 
-ps ax | grep monetdbd | grep -v grep | awk '{ print $1 }' | xargs kill -9
+# ps ax | grep monetdbd | grep -v grep | awk '{ print $1 }' | xargs kill -9
 
 monetdbd stop ${FARM} || true
 rm -rf ${FARM}
