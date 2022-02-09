@@ -1,8 +1,8 @@
 MonetDB dialect for SQLAlchemy
 ==============================
 
-This is the MonetDB dialect driver for SQLAlchemy. It has support for Python 2.7, 3.3+ and even PyPy. It supports
-SQLalchemy 1.0, 1.1 and 1.2.
+This is the MonetDB dialect driver for SQLAlchemy. It has support for Python from 3.3 onwards and even PyPy. It supports
+SQLalchemy 1.0, 1.1, 1.2, 1.3 & 1.4.
 
 
 Installation

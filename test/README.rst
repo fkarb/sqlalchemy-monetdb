@@ -15,7 +15,7 @@ Create a test schema::
 
 Now you can run the test suite::
 
-    $ python setup.py test
+    $ tox
 
 
 If you want to test the MonetDBlite dialect backend you need to use pytest::
