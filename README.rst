@@ -26,19 +26,6 @@ To start using this dialect::
     engine = create_engine('monetdb:///demo:', echo=True)
 
 
-MonetDB Lite (experimental)
----------------------------
-
-We now have experimental support for MonetDB Lite! Note that this is experimental, and will probably break.
-
-First you need to manually install MonetDB Lite: https://github.com/hannesmuehleisen/MonetDBLite-Python
-
-To connect to a MonetDBLite database use this syntax::
-
-    from sqlalchemy import create_engine
-    engine = create_engine('monetdb+lite:////tmp/monetdb_lite')
-
-
 More info
 ---------
 
