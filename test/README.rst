@@ -18,9 +18,4 @@ Now you can run the test suite::
     $ tox
 
 
-If you want to test the MonetDBlite dialect backend you need to use pytest::
-
-    $ pytest --db=monetdblite
-
-
 The ``--db`` flag selects one of the preconfigured database URLs defined in setup.cfg.
