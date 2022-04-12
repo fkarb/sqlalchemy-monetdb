@@ -2,6 +2,9 @@ from sqlalchemy.testing.requirements import SuiteRequirements, exclusions
 
 
 class Requirements(SuiteRequirements):
+    def get_order_by_collation(self, config):
+        pass
+
     @property
     def schemas(self):
         return exclusions.open()
@@ -164,4 +167,14 @@ class Requirements(SuiteRequirements):
     @property
     def unique_constraint_reflection(self):
         """target dialect supports reflection of unique constraints"""
+        return exclusions.closed()
+
+    @property
+    def self_referential_foreign_keys(self):
+        """Target database must support self-referential foreign keys."""
+        return exclusions.closed()
+
+    @property
+    def indexes_with_ascdesc(self):
+        """target database supports CREATE INDEX with per-column ASC/DESC."""
         return exclusions.closed()
