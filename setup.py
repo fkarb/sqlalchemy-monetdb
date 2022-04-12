@@ -5,15 +5,18 @@ Setup for SQLAlchemy backend for MonetDB
 from setuptools import find_packages, setup
 import os
 
+tests_require = ['pytest', 'coverage', 'mypy']
+
 extras_require = {
-    'lite': ['numpy', 'monetdblite'],
+    'monetdbe': ['monetdbe'],
+    'test': tests_require
 }
 
 readme = open(os.path.join(os.path.dirname(__file__), 'README.rst')).read()
 
 setup_params = dict(
     name="sqlalchemy_monetdb",
-    version='1.0.0',
+    version='1.1.0',
     description="SQLAlchemy dialect for MonetDB",
     author="Gijs Molenaar",
     author_email="gijsmolenaar@gmail.com",
@@ -26,13 +29,10 @@ setup_params = dict(
         "Development Status :: 5 - Production/Stable",
         "Environment :: Console",
         "Intended Audience :: Developers",
-        "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3.4",
-        "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
         "Topic :: Database :: Front-Ends",
@@ -41,7 +41,7 @@ setup_params = dict(
     packages=find_packages(),
     include_package_data=True,
     setup_requires=['pytest-runner'],
-    tests_require=['pytest', 'mock'],
+    tests_require=tests_require,
     test_suite="test.test_suite",
     zip_safe=False,
     entry_points={
