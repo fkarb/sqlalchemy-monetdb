@@ -101,13 +101,13 @@ class MonetDialect(default.DefaultDialect):
                     "AND type = 0 "
                     "AND tables.name = :name "
                     "AND schemas.name = :schema",
-                    bindparams=[
+                    ).bindparams(
                         sql.bindparam('name',
                                       util.text_type(table_name),
                                       type_=sqltypes.Unicode),
                         sql.bindparam('schema',
                                       util.text_type(schema),
-                                      type_=sqltypes.Unicode)]
+                                      type_=sqltypes.Unicode)
                 )
             )
         return bool(cursor.first())
