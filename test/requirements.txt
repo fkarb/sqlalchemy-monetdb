@@ -1,4 +1,0 @@
-mock
-coverage
-pytest
-tox

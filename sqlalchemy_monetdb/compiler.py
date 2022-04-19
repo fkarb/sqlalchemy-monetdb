@@ -3,7 +3,7 @@ from sqlalchemy.sql import compiler
 
 
 class MonetDDLCompiler(compiler.DDLCompiler):
-    def visit_create_sequence(self, create):
+    def visit_create_sequence(self, create, **kwargs):
         text = "CREATE SEQUENCE %s AS INTEGER" % \
                self.preparer.format_sequence(create.element)
         if create.element.start is not None:
@@ -12,7 +12,7 @@ class MonetDDLCompiler(compiler.DDLCompiler):
             text += " INCREMENT BY %d" % create.element.increment
         return text
 
-    def visit_drop_sequence(self, drop):
+    def visit_drop_sequence(self, drop, **kwargs):
         return "DROP SEQUENCE %s" % \
                self.preparer.format_sequence(drop.element)
 
@@ -39,7 +39,7 @@ class MonetDDLCompiler(compiler.DDLCompiler):
             colspec += " NOT NULL"
         return colspec
 
-    def visit_check_constraint(self, constraint):
+    def visit_check_constraint(self, constraint, **kwargs):
         util.warn("Skipped unsupported check constraint %s" % constraint.name)
 
 
@@ -59,15 +59,15 @@ class MonetTypeCompiler(compiler.GenericTypeCompiler):
     def visit_TINYINT(self, type_):
         return "TINYINT"
 
-    def visit_datetime(self, type_):
+    def visit_datetime(self, type_, **kwargs):
         return self.visit_TIMESTAMP(type_)
 
-    def visit_TIMESTAMP(self, type_):
+    def visit_TIMESTAMP(self, type_, **kwargs):
         if type_.timezone:
             return "TIMESTAMP WITH TIME ZONE"
         return "TIMESTAMP"
 
-    def visit_VARCHAR(self, type_):
+    def visit_VARCHAR(self, type_, **kwargs):
         if type_.length is None:
             return "CLOB"
         return compiler.GenericTypeCompiler.visit_VARCHAR(self, type_)
@@ -77,7 +77,7 @@ class MonetCompiler(compiler.SQLCompiler):
     def visit_mod(self, binary, **kw):
         return self.process(binary.left) + " %% " + self.process(binary.right)
 
-    def visit_sequence(self, seq):
+    def visit_sequence(self, seq, **kwargs):
         exc = "(NEXT VALUE FOR %s)" \
               % self.dialect.identifier_preparer.format_sequence(seq)
         return exc
