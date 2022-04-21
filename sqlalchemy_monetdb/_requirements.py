@@ -424,7 +424,7 @@ class Requirements(SuiteRequirements):
     def multivalues_inserts(self):
         """target database must support multiple VALUES clauses in an
         INSERT statement."""
-
+        # TODO: we've enabled that prop through the MonetDialect obj
         return exclusions.skip_if(
             lambda config: not config.db.dialect.supports_multivalues_insert,
             "Backend does not support multirow inserts.",
@@ -436,7 +436,7 @@ class Requirements(SuiteRequirements):
         method without reliance on RETURNING.
 
         """
-        return exclusions.open()
+        return exclusions.closed()
 
     @property
     def emulated_lastrowid(self):
@@ -471,7 +471,7 @@ class Requirements(SuiteRequirements):
     def views(self):
         """Target database must support VIEWs."""
 
-        return exclusions.closed()
+        return exclusions.open()
 
     @property
     def schemas(self):
@@ -506,13 +506,14 @@ class Requirements(SuiteRequirements):
         basically, PostgreSQL.
 
         """
-        return exclusions.closed()
+        # NOTE: MonetDB has 'sys'
+        return exclusions.open()
 
     @property
     def default_schema_name_switch(self):
         """target dialect implements provisioning module including
         set_default_schema_on_connection"""
-
+        # TODO: we could implement that in the dialect provision
         return exclusions.closed()
 
     @property
@@ -575,7 +576,7 @@ class Requirements(SuiteRequirements):
 
     @property
     def reflects_pk_names(self):
-        return exclusions.closed()
+        return exclusions.open()
 
     @property
     def table_reflection(self):
@@ -623,23 +624,28 @@ class Requirements(SuiteRequirements):
 
     @property
     def foreign_key_constraint_option_reflection_ondelete(self):
-        return exclusions.closed()
+        # TODO: this probably works with MonetDB check it 
+        return exclusions.open()
 
     @property
     def fk_constraint_option_reflection_ondelete_restrict(self):
-        return exclusions.closed()
+        # TODO: this probably works with MonetDB check it 
+        return exclusions.open()
 
     @property
     def fk_constraint_option_reflection_ondelete_noaction(self):
-        return exclusions.closed()
+        # TODO: this probably works with MonetDB check it 
+        return exclusions.open()
 
     @property
     def foreign_key_constraint_option_reflection_onupdate(self):
-        return exclusions.closed()
+        # TODO: this probably works with MonetDB check it 
+        return exclusions.open()
 
     @property
     def fk_constraint_option_reflection_onupdate_restrict(self):
-        return exclusions.closed()
+        # TODO: this probably works with MonetDB check it 
+        return exclusions.open()
 
     @property
     def temp_table_reflection(self):
@@ -652,7 +658,7 @@ class Requirements(SuiteRequirements):
     @property
     def temp_table_names(self):
         """target dialect supports listing of temporary table names"""
-        return exclusions.closed()
+        return exclusions.open()
 
     @property
     def temporary_tables(self):
@@ -670,12 +676,13 @@ class Requirements(SuiteRequirements):
 
     @property
     def index_reflects_included_columns(self):
-        return exclusions.closed()
+        # NOTE: let's see what metadata the tests need
+        return exclusions.open()
 
     @property
     def indexes_with_ascdesc(self):
         """target database supports CREATE INDEX with per-column ASC/DESC."""
-        return exclusions.open()
+        return exclusions.closed()
 
     @property
     def indexes_with_expressions(self):
@@ -685,6 +692,7 @@ class Requirements(SuiteRequirements):
     @property
     def unique_constraint_reflection(self):
         """target dialect supports reflection of unique constraints"""
+        # NOTE: before it was closed() 
         return exclusions.open()
 
     @property
@@ -720,12 +728,12 @@ class Requirements(SuiteRequirements):
         """Target driver must support some degree of non-ascii symbol
         names.
         """
-        return exclusions.closed()
+        return exclusions.open()
 
     @property
     def symbol_names_w_double_quote(self):
         """Target driver can create tables with a name like 'some " table'"""
-        return exclusions.open()
+        return exclusions.closed()
 
     @property
     def datetime_literals(self):
@@ -733,8 +741,9 @@ class Requirements(SuiteRequirements):
         literal string, e.g. via the TypeEngine.literal_processor() method.
 
         """
-
-        return exclusions.closed()
+        # NOTE: we support datetime_literals but not sure about the
+        # TypeEngine
+        return exclusions.open()
 
     @property
     def datetime(self):
@@ -748,14 +757,14 @@ class Requirements(SuiteRequirements):
         """target dialect supports representation of Python
         datetime.datetime() with tzinfo with DateTime(timezone=True)."""
 
-        return exclusions.closed()
+        return exclusions.open()
 
     @property
     def time_timezone(self):
         """target dialect supports representation of Python
         datetime.time() with tzinfo with Time(timezone=True)."""
 
-        return exclusions.closed()
+        return exclusions.open()
 
     @property
     def datetime_implicit_bound(self):
@@ -772,13 +781,15 @@ class Requirements(SuiteRequirements):
         datetime.datetime() with microsecond objects."""
 
         return exclusions.open()
+    # TODO: this is how it was done till now  
+    # time_microseconds = datetime_microseconds
 
     @property
     def timestamp_microseconds(self):
         """target dialect supports representation of Python
         datetime.datetime() with microsecond objects but only
         if TIMESTAMP is used."""
-        return exclusions.closed()
+        return exclusions.open()
 
     @property
     def timestamp_microseconds_implicit_bound(self):
@@ -795,7 +806,7 @@ class Requirements(SuiteRequirements):
         """target dialect supports representation of Python
         datetime.datetime() objects with historic (pre 1970) values."""
 
-        return exclusions.closed()
+        return exclusions.open()
 
     @property
     def date(self):
@@ -816,7 +827,7 @@ class Requirements(SuiteRequirements):
         """target dialect supports representation of Python
         datetime.datetime() objects with historic (pre 1970) values."""
 
-        return exclusions.closed()
+        return exclusions.open()
 
     @property
     def time(self):
@@ -853,13 +864,13 @@ class Requirements(SuiteRequirements):
         Basically fails on Oracle.
 
         """
-
+        # NOTE: in MonetDB SELECT CAST('foo' AS CLOB)
         return exclusions.open()
 
     @property
     def autocommit(self):
         """target dialect supports 'AUTOCOMMIT' as an isolation_level"""
-        return exclusions.closed()
+        return exclusions.open()
 
     @property
     def isolation_level(self):
@@ -869,7 +880,8 @@ class Requirements(SuiteRequirements):
         the get_isolation_levels() method be implemented.
 
         """
-        return exclusions.closed()
+        # NOTE: MonetDB supports that we are not sure about the driver
+        return exclusions.open()
 
     def get_isolation_levels(self, config):
         """Return a structure of supported isolation levels for the current
@@ -901,7 +913,7 @@ class Requirements(SuiteRequirements):
     def json_type(self):
         """target platform implements a native JSON type."""
 
-        return exclusions.closed()
+        return exclusions.open()
 
     @property
     def json_array_indexes(self):
@@ -934,13 +946,13 @@ class Requirements(SuiteRequirements):
     def precision_numerics_enotation_small(self):
         """target backend supports Decimal() objects using E notation
         to represent very small values."""
-        return exclusions.closed()
+        return exclusions.open()
 
     @property
     def precision_numerics_enotation_large(self):
         """target backend supports Decimal() objects using E notation
         to represent very large values."""
-        return exclusions.closed()
+        return exclusions.open()
 
     @property
     def precision_numerics_many_significant_digits(self):
@@ -948,7 +960,7 @@ class Requirements(SuiteRequirements):
         such as 319438950232418390.273596, 87673.594069654243
 
         """
-        return exclusions.closed()
+        return exclusions.open()
 
     @property
     def cast_precision_numerics_many_significant_digits(self):
@@ -985,6 +997,7 @@ class Requirements(SuiteRequirements):
         also using an aggregate
 
         """
+        # NOTE: MonetDB supports aggregates on agregate-using subqueries
         return exclusions.open()
 
     @property
@@ -993,7 +1006,8 @@ class Requirements(SuiteRequirements):
         foreign key
 
         """
-        return exclusions.open()
+        # NOTE: MonetDB does NOT support self-ref fk
+        return exclusions.closed()
 
     @property
     def precision_numerics_retains_significant_digits(self):
@@ -1001,7 +1015,7 @@ class Requirements(SuiteRequirements):
         i.e. a value such as 10.000 will come back in Decimal form with
         the .000 maintained."""
 
-        return exclusions.closed()
+        return exclusions.open()
 
     @property
     def infinity_floats(self):
@@ -1073,19 +1087,19 @@ class Requirements(SuiteRequirements):
     @property
     def savepoints(self):
         """Target database must support savepoints."""
-
-        return exclusions.closed()
+        # TODO: MonetDB supports SAVEPOINT. let's see if pymonetdb is ok
+        return exclusions.open()
 
     @property
     def two_phase_transactions(self):
         """Target database must support two-phase transactions."""
-
+        # TODO: MonetDB does NOT support proper 2-phase protocol
         return exclusions.closed()
 
     @property
     def update_from(self):
         """Target must support UPDATE..FROM syntax"""
-        return exclusions.closed()
+        return exclusions.open()
 
     @property
     def delete_from(self):
@@ -1112,7 +1126,7 @@ class Requirements(SuiteRequirements):
     def mod_operator_as_percent_sign(self):
         """target database must use a plain percent '%' as the 'modulus'
         operator."""
-        return exclusions.closed()
+        return exclusions.open()
 
     @property
     def percent_schema_names(self):
@@ -1124,7 +1138,9 @@ class Requirements(SuiteRequirements):
         case either.
 
         """
-        return exclusions.closed()
+        # NOTE: We allow that when using double quotes (")
+        # TODO: Make sure the dialect is handling that correctly
+        return exclusions.open()
 
     @property
     def order_by_col_from_union(self):
@@ -1134,7 +1150,7 @@ class Requirements(SuiteRequirements):
         E.g.  (SELECT id, ...) UNION (SELECT id, ...) ORDER BY id
 
         """
-        return exclusions.open()
+        return exclusions.closed()
 
     @property
     def order_by_label_with_expression(self):
@@ -1149,7 +1165,7 @@ class Requirements(SuiteRequirements):
         so this is off by default.
 
         """
-        return exclusions.closed()
+        return exclusions.open()
 
     @property
     def order_by_collation(self):
@@ -1163,6 +1179,7 @@ class Requirements(SuiteRequirements):
         return exclusions.skip_if(check)
 
     def get_order_by_collation(self, config):
+        # TODO: this was silenced with `pass` before
         raise NotImplementedError()
 
     @property
@@ -1414,7 +1431,8 @@ class Requirements(SuiteRequirements):
     @property
     def supports_distinct_on(self):
         """If a backend supports the DISTINCT ON in a select"""
-        return exclusions.closed()
+        # NOTE: this SQL syntax is supported by MonetDB 
+        return exclusions.open()
 
     @property
     def supports_is_distinct_from(self):
@@ -1436,7 +1454,7 @@ class Requirements(SuiteRequirements):
     def identity_columns(self):
         """If a backend supports GENERATED { ALWAYS | BY DEFAULT }
         AS IDENTITY"""
-        return exclusions.closed()
+        return exclusions.open()
 
     @property
     def identity_columns_standard(self):
@@ -1449,12 +1467,14 @@ class Requirements(SuiteRequirements):
     @property
     def regexp_match(self):
         """backend supports the regexp_match operator."""
-        return exclusions.closed()
+        # TODO: check if this works with MonetDB regex support 
+        return exclusions.open()
 
     @property
     def regexp_replace(self):
         """backend supports the regexp_replace operator."""
-        return exclusions.closed()
+        # TODO: check if this works with MonetDB regex support 
+        return exclusions.open()
 
     @property
     def fetch_first(self):
