@@ -1,11 +1,6 @@
 name: Linux
 
-on:
-  push:
-    branches: [ master ]
-    tags: [ "*" ]
-  pull_request:
-    branches: [ master ]
+on: [push]
 
 jobs:
   linux-test:
