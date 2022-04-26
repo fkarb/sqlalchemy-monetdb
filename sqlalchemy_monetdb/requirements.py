@@ -741,9 +741,12 @@ class Requirements(SuiteRequirements):
         literal string, e.g. via the TypeEngine.literal_processor() method.
 
         """
-        # NOTE: we support datetime_literals but not sure about the
-        # TypeEngine
-        return exclusions.open()
+        # TODO: INSERT INTO t VALUES ('<DATIME>') is supported (at least
+        # in mclient). The relevant tests are failing due to the lack of
+        # a `literal_processor` from the datetime object. we did not
+        # manage to fix it by implementing the method in the TIMESTAMP
+        # types 
+        return exclusions.closed()
 
     @property
     def datetime(self):
