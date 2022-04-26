@@ -1,4 +1,7 @@
 import re
+import typing
+from typing import Optional
+
 from sqlalchemy import sql, util
 from sqlalchemy import types as sqltypes
 
@@ -10,6 +13,9 @@ from sqlalchemy_monetdb.base import MonetExecutionContext, \
 from sqlalchemy_monetdb.compiler import MonetDDLCompiler, MonetTypeCompiler, \
     MonetCompiler
 from sqlalchemy_monetdb.monetdb_types import MONETDB_TYPE_MAP
+
+if typing.TYPE_CHECKING:
+    from sqlalchemy.engine.base import Connection
 
 try:
     import alembic
@@ -56,7 +62,7 @@ class MonetDialect(default.DefaultDialect):
     def create_execution_context(self, *args, **kwargs):
         return MonetExecutionContext(self, *args, **kwargs)
 
-    def get_table_names(self, connection, schema=None, **kw):
+    def get_table_names(self, connection: "Connection", schema=None, **kw):
         """Return a list of table names for `schema`."""
 
         q = """
@@ -70,13 +76,13 @@ class MonetDialect(default.DefaultDialect):
         return [row[0] for row in connection.execute(q, args)]
 
     @reflection.cache
-    def get_temp_table_names(self, connection, **kw):
+    def get_temp_table_names(self, con: "Connection", **kw):
         # 2097 is tmp schema, 30 is table type LOCAL TEMPORARY
         s = "SELECT tables.name FROM sys.tables WHERE schema_id = 2097 AND type = 30"
-        rs = connection.execute(s)
+        rs = con.execute(s)
         return [row[0] for row in rs]
 
-    def has_table(self, connection, table_name, schema=None):
+    def has_table(self, connection: "Connection", table_name, schema=None, **kw):
         # seems like case gets folded in pg_class...
         if schema is None:
             cursor = connection.execute(
@@ -101,18 +107,18 @@ class MonetDialect(default.DefaultDialect):
                     "AND type = 0 "
                     "AND tables.name = :name "
                     "AND schemas.name = :schema",
-                ).bindparams(
-                    sql.bindparam('name',
-                                    util.text_type(table_name),
-                                    type_=sqltypes.Unicode),
-                    sql.bindparam('schema',
-                                    util.text_type(schema),
-                                    type_=sqltypes.Unicode)
+                    ).bindparams(
+                        sql.bindparam('name',
+                                      util.text_type(table_name),
+                                      type_=sqltypes.Unicode),
+                        sql.bindparam('schema',
+                                      util.text_type(schema),
+                                      type_=sqltypes.Unicode)
                 )
             )
         return bool(cursor.first())
 
-    def has_sequence(self, connection, sequence_name, schema=None):
+    def has_sequence(self, connection: "Connection", sequence_name, schema=None, **kw):
         q = """
             SELECT id
             FROM sys.sequences
@@ -126,12 +132,30 @@ class MonetDialect(default.DefaultDialect):
         cursor = connection.execute(q, args)
         return bool(cursor.first())
 
+    def get_sequence_names(self, connection: "Connection", schema: Optional[str] = None, **kw):
+        """Return a list of all sequence names available in the database.
+
+        :param connection: sqlalchemy connection
+        :param schema: schema name to query, if not the default schema.
+
+        .. versionadded:: 1.4
+        """
+
+        q = "SELECT name FROM sys.sequences"
+        if schema:
+            q += " AND schema_id = %(schema_id)s"
+        args = {
+            "schema_id": self._schema_id(connection, schema)
+        }
+        cursor = connection.execute(q, args)
+        return cursor.fetchall()
+
     @reflection.cache
-    def _schema_id(self, connection, schema_name):
+    def _schema_id(self, con: "Connection", schema_name):
         """Fetch the id for schema"""
 
         if schema_name is None:
-            schema_name = connection.execute("SELECT current_schema").scalar()
+            schema_name = con.execute("SELECT current_schema").scalar()
 
         query = """
                     SELECT id
@@ -139,14 +163,14 @@ class MonetDialect(default.DefaultDialect):
                     WHERE name = %(schema_name)s
                 """
         args = {"schema_name": schema_name}
-        cursor = connection.execute(query, args)
+        cursor = con.execute(query, args)
         schema_id = cursor.scalar()
         if schema_id is None:
             raise exc.InvalidRequestError(schema_name)
         return schema_id
 
     @reflection.cache
-    def _table_id(self, connection, table_name, schema_name=None):
+    def _table_id(self, con: "Connection", table_name, schema_name=None):
         """Fetch the id for schema.table_name, defaulting to current schema if
         schema is None
         """
@@ -158,9 +182,9 @@ class MonetDialect(default.DefaultDialect):
         """
         args = {
             "name": table_name,
-            "schema_id": self._schema_id(connection, schema_name)
+            "schema_id": self._schema_id(con, schema_name)
         }
-        c = connection.execute(q, args)
+        c = con.execute(q, args)
 
         table_id = c.scalar()
         if table_id is None:
@@ -168,7 +192,7 @@ class MonetDialect(default.DefaultDialect):
 
         return table_id
 
-    def get_columns(self, connection, table_name, schema=None, **kw):
+    def get_columns(self, connection: "Connection", table_name, schema=None, **kw):
         q = """
             SELECT id, name, type, "default", "null", type_digits, type_scale
             FROM sys.columns
@@ -214,7 +238,7 @@ class MonetDialect(default.DefaultDialect):
             result.append(column)
         return result
 
-    def get_foreign_keys(self, connection, table_name, schema=None, **kw):
+    def get_foreign_keys(self, connection: "Connection", table_name, schema=None, **kw):
         """Return information about foreign_keys in `table_name`.
 
         Given a string `table_name`, and an optional string `schema`, return
@@ -301,7 +325,7 @@ class MonetDialect(default.DefaultDialect):
 
         return results
 
-    def get_indexes(self, connection, table_name, schema=None, **kw):
+    def get_indexes(self, connection: "Connection", table_name, schema=None, **kw):
         q = """
             SELECT idxs.name, objects.name AS "column_name"
             FROM sys.idxs
@@ -345,15 +369,15 @@ class MonetDialect(default.DefaultDialect):
         connection.rollback()
 
     @reflection.cache
-    def get_schema_names(self, connection, **kw):
+    def get_schema_names(self, con: "Connection", **kw):
         s = """
                 SELECT name FROM sys.schemas ORDER BY name
             """
-        c = connection.execute(s)
+        c = con.execute(s)
         schema_names = [row[0] for row in c]
         return schema_names
 
-    def get_view_definition(self, connection, view_name, schema=None, **kw):
+    def get_view_definition(self, connection: "Connection", view_name, schema=None, **kw):
         """Return view definition.
 
         Given a :class:`.Connection`, a string
@@ -373,7 +397,7 @@ class MonetDialect(default.DefaultDialect):
         }
         return connection.execute(q, args)
 
-    def get_view_names(self, connection, schema=None, **kw):
+    def get_view_names(self, connection: "Connection", schema=None, **kw):
         """Return a list of all view names available in the database.
 
         schema:
@@ -398,7 +422,7 @@ class MonetDialect(default.DefaultDialect):
         """
         return connection.execute("SELECT CURRENT_SCHEMA").scalar()
 
-    def get_pk_constraint(self, connection, table_name, schema=None, **kw):
+    def get_pk_constraint(self, connection: "Connection", table_name, schema=None, **kw):
         """Return information about primary key constraint on `table_name`.
 
         Given a string `table_name`, and an optional string `schema`, return
@@ -433,7 +457,7 @@ class MonetDialect(default.DefaultDialect):
         else:
             return {}
 
-    def get_unique_constraints(self, connection, table_name, schema=None, **kw):
+    def get_unique_constraints(self, connection: "Connection", table_name, schema=None, **kw):
         """Return information about unique constraints in `table_name`.
 
         Given a string `table_name` and an optional string `schema`, return
