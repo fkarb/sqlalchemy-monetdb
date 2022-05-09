@@ -6,7 +6,7 @@ venv/bin/pytest: venv/
 	venv/bin/pip install -e ".[test]"
 
 pytest: venv/bin/pytest
-	venv/bin/pytest
+	venv/bin/pytest -r A
 
 venv/bin/tox: venv/
 	venv/bin/pip install tox

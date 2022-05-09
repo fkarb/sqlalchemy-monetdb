@@ -38,8 +38,11 @@ class MonetDialect(default.DefaultDialect):
     supports_native_decimal = True
     supports_default_values = True
     supports_native_boolean = True
+    supports_multivalues_insert = True
     poolclass = pool.SingletonThreadPool
     supports_unicode_statements = True
+    postfetch_lastrowid = False
+    supports_is_distinct_from = False
 
     statement_compiler = MonetCompiler
     ddl_compiler = MonetDDLCompiler

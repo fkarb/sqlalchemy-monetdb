@@ -40,6 +40,7 @@ class MonetDDLCompiler(compiler.DDLCompiler):
         return colspec
 
     def visit_check_constraint(self, constraint, **kwargs):
+        # TODO: this turns out to be an error in pytest 
         util.warn("Skipped unsupported check constraint %s" % constraint.name)
 
 
