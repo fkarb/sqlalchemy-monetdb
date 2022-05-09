@@ -749,10 +749,9 @@ class Requirements(SuiteRequirements):
         """
         # TODO: INSERT INTO t VALUES ('<DATIME>') is supported (at least
         # in mclient). The relevant tests are failing due to the lack of
-        # a `literal_processor` from the datetime object. we did not
-        # manage to fix it by implementing the method in the TIMESTAMP
-        # types 
-        return exclusions.closed()
+        # a `literal_processor` from the datetime object. it must be
+        # fixed by implementing the method of the TIMESTAMP type(s)
+        return exclusions.open()
 
     @property
     def datetime(self):
