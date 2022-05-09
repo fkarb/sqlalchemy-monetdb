@@ -592,6 +592,8 @@ class Requirements(SuiteRequirements):
 
     @property
     def comment_reflection(self):
+        # TODO: COMMENT on SQL objects are in general supported by
+        # monetdb. Investigate if we could implement reflection for them 
         return exclusions.closed()
 
     @property
