@@ -733,7 +733,11 @@ class Requirements(SuiteRequirements):
     @property
     def symbol_names_w_double_quote(self):
         """Target driver can create tables with a name like 'some " table'"""
-        return exclusions.closed()
+        # NOTE: Creating tables with names that contain the " character
+        # can be done through sqlalchemy e.g. 'some "table'. To
+        # manipulate such a table through mclient escape the " char with
+        # another one e.g. SELECT * FROM "some ""table";
+        return exclusions.open()
 
     @property
     def datetime_literals(self):
